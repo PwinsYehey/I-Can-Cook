@@ -4,7 +4,7 @@
 export default async function handler(req, res) {
   try {
     const q = (req.query.q || '').toString().slice(0, 300);
-    const key = process.env.SPOONACULAR_KEY; // set this in Vercel env
+    const key = process.env.SPOONACULAR_KEY; // make sure this is set in Vercel
 
     if (!key) {
       return res.status(500).json({ error: 'Missing SPOONACULAR_KEY env var' });
@@ -33,14 +33,20 @@ export default async function handler(req, res) {
       const ingredients =
         (item.extendedIngredients || []).map(i => (i.name || '').toLowerCase());
 
+      // Prefer Spoonacular's own URL (more stable), fall back to original site
+      const primaryUrl =
+        item.spoonacularSourceUrl ||
+        item.sourceUrl ||
+        '';
+
       return {
         id: item.id,
         title: item.title,
-        url: item.sourceUrl || item.spoonacularSourceUrl || '',
+        url: primaryUrl,
         image: item.image || '',
         source: item.sourceName || 'Spoonacular',
         cuisine: (item.cuisines && item.cuisines[0]) || '',
-        country: '', // Spoonacular doesn't always give a country; we keep this for future use
+        country: '',
         ingredients
       };
     });
