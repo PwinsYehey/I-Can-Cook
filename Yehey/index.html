@@ -48,44 +48,6 @@
   .add-inside:hover{transform:translateY(-50%) scale(1.04)}
   .tip{font-size:12.5px;color:#6b7280;margin-top:6px}
 
-  /* Filters bar */
-  .filters-bar{
-    margin-top:14px;
-    padding:10px 14px;
-    border-radius:16px;
-    background:rgba(255,255,255,0.92);
-    border:1px solid rgba(148,163,184,.28);
-    box-shadow:0 10px 25px rgba(15,23,42,.05);
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px 18px;
-    align-items:center;
-    font-size:13px;
-    color:#475569;
-  }
-  .filters-bar label{
-    font-weight:500;
-    margin-right:4px;
-  }
-  .filter-group{
-    display:flex;
-    align-items:center;
-    gap:6px;
-  }
-  .filter-select{
-    border-radius:999px;
-    border:1px solid rgba(148,163,184,.7);
-    background:#f8fafc;
-    padding:6px 10px;
-    font-size:13px;
-    color:#1f2933;
-    outline:none;
-  }
-  .filter-select:focus{
-    border-color:var(--accent);
-    box-shadow:0 0 0 3px var(--ring);
-  }
-
   /* Sections */
   .section{margin-top:28px}
   .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
@@ -112,7 +74,7 @@
   .chip{background:#f3faf4;border:1px solid rgba(122,158,126,.35);color:#234;padding:8px 10px;border-radius:999px;font-size:13px;cursor:pointer;white-space:nowrap}
   .chip.is-selected{background:var(--accent);color:#fff;border-color:rgba(122,158,126,.85)}
 
-  /* Modal (picker + results) */
+  /* Modal (picker + results + details) */
   .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1000}
   .modal.open{display:flex}
   .backdrop{position:absolute;inset:0;background:rgba(15,23,42,.32)}
@@ -261,6 +223,10 @@
     color:#ffffff;
     border-color:var(--accent);
   }
+  .recipe-actions a.secondary{
+    background:#f8fafc;
+    color:#0f172a;
+  }
   .recipe-actions a:hover{
     box-shadow:var(--shadow);
   }
@@ -287,6 +253,32 @@
   @media (max-width:640px){.cart-inner{flex-wrap:wrap}.cart-tags{max-height:120px}}
 
   .footer{font-size:12px;color:#94a3b8;display:flex;gap:14px;align-items:center;justify-content:center;margin-top:26px}
+
+  /* Details modal specific */
+  .detail-main{display:flex;gap:18px;flex-wrap:wrap}
+  .detail-image{
+    flex:0 0 260px;
+    max-width:100%;
+    border-radius:18px;
+    object-fit:cover;
+    background:#e2e8f0;
+    box-shadow:var(--shadow);
+  }
+  .detail-info{flex:1;min-width:220px}
+  .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+  .tag-pill{
+    font-size:11px;
+    padding:4px 8px;
+    border-radius:999px;
+    background:#f1f5f9;
+    color:#475569;
+  }
+  .detail-meta{font-size:13px;color:#475569;margin-bottom:10px}
+  .detail-section{margin-top:12px}
+  .detail-section h4{margin:0 0 6px;font-size:14px}
+  .detail-section ul{margin:0;padding-left:18px;font-size:13px;color:#1f2933}
+  .detail-section li{margin-bottom:4px}
+  .detail-text{font-size:13px;color:#1f2933;line-height:1.5;white-space:pre-line}
 </style>
 </head>
 <body>
@@ -321,31 +313,6 @@
         <button id="addInside" class="add-inside" type="button">Add</button>
       </div>
       <div class="tip">Tip: separate with commas. Press Enter to add quickly.</div>
-
-      <!-- New filters bar -->
-      <div class="filters-bar" aria-label="Recipe filters">
-        <div class="filter-group">
-          <label for="maxTimeFilter">Time</label>
-          <select id="maxTimeFilter" class="filter-select">
-            <option value="">Any</option>
-            <option value="15">≤ 15 min</option>
-            <option value="30">≤ 30 min</option>
-            <option value="45">≤ 45 min</option>
-            <option value="60">≤ 60 min</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label for="dietFilter">Diet</label>
-          <select id="dietFilter" class="filter-select">
-            <option value="">Any</option>
-            <option value="vegetarian">Vegetarian</option>
-            <option value="vegan">Vegan</option>
-            <option value="gluten free">Gluten Free</option>
-            <option value="ketogenic">Ketogenic</option>
-          </select>
-        </div>
-        <div style="font-size:12px;color:#94a3b8;">Filters refine what Spoonacular searches for, on top of your ingredients.</div>
-      </div>
     </header>
 
     <!-- Ingredient Categories -->
@@ -442,6 +409,22 @@
     </div>
   </div>
 
+  <!-- DETAILS MODAL -->
+  <div id="detailModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="backdrop" data-close-detail></div>
+    <div class="dialog" role="document">
+      <div class="dialog-header">
+        <div id="detailTitle" class="dialog-title">Recipe details</div>
+        <button class="xbtn" data-close-detail aria-label="Close">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M6 6l12 12M18 6L6 18" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div id="detailBody" class="dialog-body"></div>
+    </div>
+  </div>
+
 <script>
 /* ---------------- Data ---------------- */
 const CATEGORY_DATA = [
@@ -483,10 +466,6 @@ const generateBtn  = document.getElementById('generateBtn');
 const burger       = document.getElementById('burger');
 const navMenu      = document.getElementById('navMenu');
 
-/* new filter DOM refs */
-const maxTimeFilter = document.getElementById('maxTimeFilter');
-const dietFilter    = document.getElementById('dietFilter');
-
 /* Picker modal */
 const modal      = document.getElementById('pickerModal');
 const modalTitle = document.getElementById('pickerTitle');
@@ -502,6 +481,11 @@ const onlyFull      = document.getElementById('onlyFull');
 const maxMissing    = document.getElementById('maxMissing');
 const maxMissingVal = document.getElementById('maxMissingVal');
 const sortBy        = document.getElementById('sortBy');
+
+/* Details modal */
+const detailModal  = document.getElementById('detailModal');
+const detailBody   = document.getElementById('detailBody');
+const detailTitle  = document.getElementById('detailTitle');
 
 /* ---------------- Nav ---------------- */
 burger?.addEventListener('click', ()=> {
@@ -668,6 +652,12 @@ maxMissing.addEventListener('input', ()=>{ maxMissingVal.textContent=maxMissing.
 onlyFull.addEventListener('change', applyFiltersAndRender);
 sortBy.addEventListener('change', applyFiltersAndRender);
 
+/* ---------------- Details modal controls ---------------- */
+function openDetailModal(){ detailModal.classList.add('open'); detailModal.setAttribute('aria-hidden','false'); }
+function closeDetailModal(){ detailModal.classList.remove('open'); detailModal.setAttribute('aria-hidden','true'); }
+detailModal.addEventListener('click',(e)=>{ if(e.target.closest('[data-close-detail]')) closeDetailModal(); });
+detailModal.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closeDetailModal(); });
+
 /* ---------------- Ingredient normalization ---------------- */
 const SYNONYMS = new Map([
   ['ground beef','beef'], ['minced beef','beef'],
@@ -729,7 +719,7 @@ function applyFiltersAndRender(){
   renderRecipeResults(list);
 }
 
-/* Render recipe cards with new design */
+/* Render recipe cards with Details button */
 function renderRecipeResults(list){
   resultsStatus.textContent = `${list.length} result${list.length!==1?'s':''}`;
   if(!list.length){
@@ -742,7 +732,6 @@ function renderRecipeResults(list){
     const pct = isNaN(r.coverage) ? null : Math.round(r.coverage*100);
     const full = (r.coverage===1 && r.missing===0);
     const missingCount = typeof r.missing==='number' ? r.missing : null;
-    const missingStr = (r.missingList || []).slice(0,3).map(capitalize).join(', ') + ((r.missingList || []).length>3?'…':'');
     const usesStr = (r.matchedList || []).slice(0,4).map(capitalize).join(', ');
     const cuisineLabel = r.cuisine ? capitalize(r.cuisine) : '';
     const sourceLabel = r.source || '';
@@ -769,15 +758,74 @@ function renderRecipeResults(list){
           ${metaPieces.length ? `<div class="meta-chip">${metaPieces.join(' • ')}</div>` : ''}
         </div>
         ${usesStr ? `<div class="recipe-uses">Uses: <span>${usesStr}</span>${(r.matchedList || []).length>4 ? ' +' + ((r.matchedList||[]).length-4) + ' more' : ''}</div>` : ''}
-        ${missingCount !== null && missingCount>0 ? `<div style="margin-top:4px;font-size:11px;color:#9a3412;">Missing: ${missingStr}</div>` : ''}
       </div>
       <div class="recipe-actions">
+        <a class="secondary" href="#" data-details-id="${r.id}">Details</a>
         <a class="primary" href="${r.url || '#'}" target="_blank" rel="noopener">Open Recipe</a>
       </div>
     </article>`;
   }).join('');
   resultsBody.innerHTML = '';
   resultsBody.appendChild(grid);
+}
+
+/* ---------------- Result list click (Details) ---------------- */
+resultsBody.addEventListener('click', async (e)=>{
+  const btn = e.target.closest('[data-details-id]');
+  if(!btn) return;
+  e.preventDefault();
+  const id = btn.dataset.detailsId;
+  const basic = latestResults.find(r => String(r.id) === String(id));
+  if(!basic) return;
+
+  detailTitle.textContent = basic.title || 'Recipe details';
+  detailBody.innerHTML = `<div class="loading"><span class="spinner"></span><span>Loading recipe details…</span></div>`;
+  openDetailModal();
+
+  try{
+    const res = await fetch(`/api/recipe?id=${encodeURIComponent(id)}`);
+    if(!res.ok) throw new Error('detail fail');
+    const data = await res.json();
+    renderDetail(data, basic);
+  }catch(err){
+    console.error(err);
+    detailBody.innerHTML = `<div class="loading">Couldn’t load full details right now. Please try again later.</div>`;
+  }
+});
+
+/* ---------------- Detail rendering ---------------- */
+function renderDetail(detail, basic){
+  const img = detail.image || basic.image || '';
+  const cuisines = (detail.cuisines && detail.cuisines.join(', ')) || basic.cuisine || '';
+  const diets = (detail.diets && detail.diets.join(', ')) || '';
+  const ready = detail.readyInMinutes ? `${detail.readyInMinutes} min` : '';
+  const servings = detail.servings ? `${detail.servings} servings` : '';
+  const source = detail.sourceName || basic.source || '';
+  const tags = [];
+  if(cuisines) tags.push(cuisines);
+  if(diets) tags.push(diets);
+  if(source) tags.push(`By ${source}`);
+  const metaLines = [];
+  if(ready) metaLines.push(`⏱ ${ready}`);
+  if(servings) metaLines.push(`🍽 ${servings}`);
+
+  const ingList = (detail.ingredients || []).map(i => `<li>${i}</li>`).join('');
+  const instructions = detail.instructions || '';
+  const summary = detail.summary || '';
+
+  detailBody.innerHTML = `
+    <div class="detail-main">
+      ${img ? `<img class="detail-image" src="${img}" alt="${basic.title}">` : ''}
+      <div class="detail-info">
+        ${tags.length ? `<div class="tag-row">${tags.map(t=>`<span class="tag-pill">${t}</span>`).join('')}</div>` : ''}
+        ${metaLines.length ? `<div class="detail-meta">${metaLines.join(' • ')}</div>` : ''}
+        ${summary ? `<div class="detail-section"><h4>Overview</h4><div class="detail-text">${summary}</div></div>` : ''}
+      </div>
+    </div>
+    ${ingList ? `<div class="detail-section"><h4>Ingredients</h4><ul>${ingList}</ul></div>` : ''}
+    ${instructions ? `<div class="detail-section"><h4>Steps</h4><div class="detail-text">${instructions}</div></div>` : ''}
+    ${detail.url ? `<div class="detail-section"><a href="${detail.url}" target="_blank" rel="noopener">Open full recipe on original site →</a></div>` : ''}
+  `;
 }
 
 /* ---------------- Generate Recipes (Spoonacular call) ---------------- */
@@ -802,12 +850,7 @@ generateBtn.addEventListener('click', async ()=>{
   const query = qParts.join(' ');
 
   try{
-    const params = new URLSearchParams();
-    params.set('q', query);
-    if(maxTimeFilter.value) params.set('maxTime', maxTimeFilter.value);
-    if(dietFilter.value) params.set('diet', dietFilter.value);
-
-    const res = await fetch(`/api/recipes?${params.toString()}`);
+    const res = await fetch(`/api/recipes?q=${encodeURIComponent(query)}`);
     if(!res.ok) throw new Error('Search failed');
     const data = await res.json();
 
@@ -819,7 +862,7 @@ generateBtn.addEventListener('click', async ()=>{
     });
 
     if(!latestResults.length){
-      resultsBody.innerHTML = `<div class="loading">No recipes found yet. Try fewer ingredients or relax your filters.</div>`;
+      resultsBody.innerHTML = `<div class="loading">No recipes found yet. Try fewer ingredients or remove some filters.</div>`;
       resultsStatus.textContent = '';
       return;
     }
@@ -838,4 +881,3 @@ renderCategories(); renderRegions(); renderCart();
 </script>
 </body>
 </html>
-
