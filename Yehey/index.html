@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TaDa I Can Cook!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F9F5EC; --text:#0f172a; --muted:#5b6478; --accent:#7A9E7E; --ring:rgba(122,158,126,.45);
+    --shadow:0 10px 25px rgba(16,24,40,.08), 0 2px 8px rgba(16,24,40,.06); --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+
+  /* Top Nav (centered menu, social right) */
+  .topnav{position:sticky;top:0;z-index:80;background:rgba(249,245,236,.92);backdrop-filter:saturate(160%) blur(8px);border-bottom:1px solid rgba(15,23,42,.06)}
+  .nav-inner{max-width:1120px;margin:0 auto;padding:10px 20px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+  .logo-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--ring)}
+  .nav-links{display:flex;gap:24px;justify-content:center;align-items:center}
+  .nav-links a{color:#334155;text-decoration:none;font-weight:600;padding:8px 10px;border-radius:10px}
+  .nav-links a:hover{background:rgba(100,116,139,.10)}
+  .social{display:flex;gap:10px;justify-self:end}
+  .social a{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:12px;background:#fff;border:1px solid rgba(15,23,42,.08);box-shadow:var(--shadow)}
+  .social svg{width:18px;height:18px}
+  .hamburger{display:none;justify-self:end;border:1px solid rgba(15,23,42,.12);background:#fff;padding:8px 10px;border-radius:12px;cursor:pointer}
+  @media (max-width:820px){
+    .nav-inner{grid-template-columns:auto 1fr auto auto}
+    .hamburger{display:inline-flex}
+    .nav-links{display:none;position:absolute;left:0;right:0;top:56px;background:#fff;border-bottom:1px solid rgba(15,23,42,.08);padding:12px 20px;box-shadow:0 12px 25px rgba(16,24,40,.10)}
+    .nav-links.open{display:flex;flex-direction:column;gap:8px}
+  }
+
+  .container{max-width:1120px;margin:0 auto;padding:28px 20px 140px}
+  .title{font-size:clamp(28px,4.2vw,44px);font-weight:700;margin:4px 0 8px}
+  .subtitle{color:var(--muted);margin:0 0 18px}
+
+  /* Search with embedded Add */
+  .search-wrap{position:relative;margin-bottom:8px}
+  .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;opacity:.65;pointer-events:none}
+  .search{width:100%;padding:16px 112px 16px 44px;border-radius:24px;border:1.5px solid rgba(15,23,42,.08);background:#fff;box-shadow:var(--shadow);outline:none;font-size:15px}
+  .search:focus{border-color:var(--accent);box-shadow:0 0 0 5px var(--ring),var(--shadow)}
+  .add-inside{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:var(--accent);color:#fff;border:none;font-weight:700;border-radius:999px;padding:10px 18px;cursor:pointer;box-shadow:0 6px 14px rgba(122,158,126,.28)}
+  .add-inside:hover{transform:translateY(-50%) scale(1.04)}
+  .tip{font-size:12.5px;color:#6b7280;margin-top:6px}
+
+  /* Sections */
+  .section{margin-top:28px}
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .section h2{font-size:22px;margin:0}
+  .section p{margin:4px 0 0;color:#6b7280;font-size:14px}
+  .view-all{color:#64748b;font-weight:500;text-decoration:none;border-radius:10px;padding:8px 10px}
+  .view-all:hover{background:rgba(100,116,139,.08)}
+
+  /* Cards */
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:14px}
+  @media (max-width:980px){.grid{grid-template-columns:repeat(3,1fr)}}
+  @media (max-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
+
+  .category-card{position:relative;background:linear-gradient(180deg,#fff,#f7faf7);border:1px solid rgba(15,23,42,.06);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);cursor:pointer;transition:transform .2s ease, box-shadow .2s ease}
+  .category-card:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 18px 35px rgba(16,24,40,.12)}
+  .cat-title{display:flex;gap:10px;align-items:center;font-weight:700}
+  .cat-sub{font-size:12.5px;color:#6b7280;margin-top:2px}
+  .emoji{font-size:22px}
+  .sel-badge{position:absolute;right:12px;top:12px;background:var(--accent);color:#fff;font-weight:700;font-size:12px;line-height:1;padding:6px 8px;border-radius:999px;box-shadow:var(--shadow)}
+  .hidden{display:none!important}
+
+  /* Chips */
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{background:#f3faf4;border:1px solid rgba(122,158,126,.35);color:#234;padding:8px 10px;border-radius:999px;font-size:13px;cursor:pointer;white-space:nowrap}
+  .chip.is-selected{background:var(--accent);color:#fff;border-color:rgba(122,158,126,.85)}
+
+  /* Modal (picker + results) */
+  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1000}
+  .modal.open{display:flex}
+  .backdrop{position:absolute;inset:0;background:rgba(15,23,42,.32)}
+  .dialog{
+    position:relative;background:#fff;border-radius:24px;
+    box-shadow:0 24px 60px rgba(0,0,0,.22), var(--shadow);
+    border:1px solid rgba(15,23,42,.06);
+    max-width:960px;width:min(94vw,960px);max-height:86vh;
+    padding:22px;display:flex;flex-direction:column;gap:6px
+  }
+  .dialog-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+  .dialog-title{font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px}
+  .xbtn{all:unset;cursor:pointer;border-radius:12px;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
+  .xbtn:hover{background:#f1f5f9}
+  .dialog-sub{font-size:12.5px;color:#6b7280;margin:2px 0 10px}
+  .dialog-body{overflow:auto;max-height:58vh;padding:2px}
+  .dialog-footer{margin-top:12px}
+  .btn-primary{
+    width:100%;height:52px;border:none;background:var(--accent);
+    color:#fff;font-weight:700;border-radius:16px;cursor:pointer;
+    box-shadow:0 14px 28px rgba(122,158,126,.25)
+  }
+  .btn-primary:hover{filter:brightness(.98)}
+
+  /* Results grid */
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+  .toolbar .seg{display:flex;gap:6px;align-items:center;color:#475569;font-size:13px}
+  .recipes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media (max-width:980px){ .recipes{grid-template-columns:repeat(2,1fr)} }
+  @media (max-width:640px){ .recipes{grid-template-columns:1fr} }
+
+  .recipe-card{
+    display:flex;flex-direction:column;overflow:hidden;border-radius:16px;
+    border:1px solid rgba(15,23,42,.06);background:#fff;box-shadow:var(--shadow);
+  }
+  .recipe-thumb{aspect-ratio:16/9;object-fit:cover;background:#f1f5f9}
+  .recipe-body{padding:12px}
+  .recipe-title{font-weight:700;margin:0 0 6px;font-size:16px;line-height:1.3}
+  .recipe-meta{display:flex;gap:8px;align-items:center;color:#64748b;font-size:12px;flex-wrap:wrap}
+  .badge{border:1px solid #d1fae5;background:#ecfdf5;border-radius:999px;font-size:11px;padding:4px 8px;color:#065f46}
+  .missing{color:#9a3412;background:#fff7ed;border:1px solid #fed7aa;border-radius:999px;padding:3px 8px;font-size:11px}
+  .recipe-actions{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(15,23,42,.06)}
+  .recipe-actions a{flex:1;text-align:center;text-decoration:none;border:1px solid rgba(15,23,42,.12);padding:8px;border-radius:10px;color:#0f172a;font-weight:600}
+  .recipe-actions a:hover{box-shadow:var(--shadow)}
+  .loading{display:flex;gap:10px;align-items:center;justify-content:center;padding:28px 6px;color:#64748b}
+  .spinner{width:18px;height:18px;border:3px solid #e5e7eb;border-top-color:var(--accent);border-radius:999px;animation:sp 0.9s linear infinite}
+  @keyframes sp{to{transform:rotate(1turn)}}
+
+  /* Cart */
+  .cart{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid rgba(15,23,42,.06);box-shadow:0 -10px 30px rgba(16,24,40,.08);padding:12px 0;z-index:50}
+  .cart-inner{max-width:1120px;margin:0 auto;padding:8px 20px;display:flex;gap:12px;align-items:center}
+  .cart-title{color:#6b7280;font-size:14px;white-space:nowrap}
+  .cart-tags{display:flex;gap:8px;align-items:center;flex-wrap:wrap;max-height:80px;overflow:auto;padding-right:8px}
+  .itag{display:inline-flex;align-items:center;gap:6px;background:#edf7ee;border:1px solid rgba(122,158,126,.45);border-radius:999px;padding:8px 10px;font-size:13px}
+  .itag.country{background:#eef6ff;border-color:#cfe7ff}
+  .itag button{all:unset;cursor:pointer;padding:4px 8px;border-radius:8px;line-height:1}
+  .itag button:hover{background:rgba(15,23,42,.08)}
+  .spacer{flex:1}
+  .btn{border:1.5px solid rgba(15,23,42,.12);background:#fff;padding:10px 14px;border-radius:12px;font-weight:600;cursor:pointer}
+  .btn:hover{box-shadow:var(--shadow)}
+  .btn-ghost{border-color:#cbd5e1;color:#475569}
+  .btn-outline{border-color:var(--accent);color:var(--accent);background:linear-gradient(180deg,#f7fff9,#ffffff)}
+  .btn-solid{background:var(--accent);color:#fff;border-color:var(--accent)}
+  @media (max-width:640px){.cart-inner{flex-wrap:wrap}.cart-tags{max-height:120px}}
+
+  .footer{font-size:12px;color:#94a3b8;display:flex;gap:14px;align-items:center;justify-content:center;margin-top:26px}
+</style>
+</head>
+<body>
+  <!-- Header -->
+  <nav class="topnav" role="navigation" aria-label="Primary">
+    <div class="nav-inner">
+      <div class="brand"><span class="logo-dot"></span><span>TaDa I Can Cook!</span></div>
+      <div id="navMenu" class="nav-links">
+        <a href="#">Home</a>
+        <a href="#cat-title">Let’s Cook!</a>
+        <a href="#region-title">About Us</a>
+        <a href="#">Contact</a>
+      </div>
+      <button id="burger" class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="#334155" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <div class="social" aria-label="Social links">
+        <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none"><path d="M14 9h3V6h-3a3 3 0 0 0-3 3v3H8v3h3v6h3v-6h3l1-3h-4V9a1 1 0 0 1 1-1Z" fill="#334155"/></svg></a>
+        <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="#334155"/><circle cx="12" cy="12" r="4.2" stroke="#334155"/><circle cx="17.5" cy="6.5" r="1.2" fill="#334155"/></svg></a>
+        <a href="#" aria-label="X (Twitter)"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3h3.6l5.4 7.1L18.4 3H21l-7.4 9.3L21 21h-3.6l-6-7.9L5.6 21H3l7.8-9.8L3 3Z" fill="#334155"/></svg></a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <header class="hero" aria-labelledby="page-title">
+      <h1 id="page-title" class="title">Find ideas from what you have</h1>
+      <p class="subtitle">Type your ingredients, then pick cuisines or categories. We’ll suggest recipes that match your pantry.</p>
+      <div class="search-wrap" role="search">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15Zm0 0 7 7" stroke="#64748b" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <input id="ingredientInput" class="search" type="text" placeholder="e.g., chicken, onion, garlic" aria-label="Add ingredients" />
+        <button id="addInside" class="add-inside" type="button">Add</button>
+      </div>
+      <div class="tip">Tip: separate with commas. Press Enter to add quickly.</div>
+    </header>
+
+    <!-- Ingredient Categories -->
+    <section class="section" aria-labelledby="cat-title">
+      <div class="section-head">
+        <div>
+          <h2 id="cat-title">Categories</h2>
+          <p>Choose what’s in your pantry</p>
+        </div>
+        <a class="view-all" href="#">View all</a>
+      </div>
+      <div id="categoryGrid" class="grid"></div>
+    </section>
+
+    <!-- Regions -->
+    <section class="section" aria-labelledby="region-title">
+      <div class="section-head">
+        <div>
+          <h2 id="region-title">Regions</h2>
+          <p>Tap to choose a country</p>
+        </div>
+        <a class="view-all" href="#">View all</a>
+      </div>
+      <div id="regionGrid" class="grid"></div>
+    </section>
+
+    <div class="footer">© 2025 TaDa! I Can Cook — crafted with ❤️</div>
+  </div>
+
+  <!-- Bottom cart -->
+  <div class="cart" role="region" aria-label="Ingredient and cuisine cart">
+    <div class="cart-inner">
+      <div id="cartTitle" class="cart-title">Add ingredients or pick at least one category/cuisine.</div>
+      <div id="cartTags" class="cart-tags" aria-live="polite"></div>
+      <div class="spacer"></div>
+      <button id="clearBtn" class="btn btn-ghost" type="button">Clear All</button>
+      <button id="surpriseBtn" class="btn btn-outline" type="button">Surprise Me</button>
+      <button id="generateBtn" class="btn btn-solid" type="button">Generate Recipes</button>
+    </div>
+  </div>
+
+  <!-- PICKER MODAL (ingredients/countries) -->
+  <div id="pickerModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="backdrop" data-dismiss></div>
+    <div class="dialog" role="document" aria-labelledby="pickerTitle" style="max-width:640px;">
+      <div class="dialog-header">
+        <div id="pickerTitle" class="dialog-title"></div>
+        <button class="xbtn" data-dismiss aria-label="Close">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M6 6l12 12M18 6L6 18" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div id="pickerSub" class="dialog-sub"></div>
+      <div id="pickerBody" class="dialog-body"></div>
+      <div class="dialog-footer">
+        <button id="confirmBtn" class="btn-primary" type="button">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS MODAL -->
+  <div id="resultsModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="backdrop" data-close-results></div>
+    <div class="dialog" role="document">
+      <div class="dialog-header">
+        <div class="dialog-title">Recipe suggestions</div>
+        <button class="xbtn" data-close-results aria-label="Close">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M6 6l12 12M18 6L6 18" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="toolbar">
+        <div class="seg"><input id="onlyFull" type="checkbox"> <label for="onlyFull">Only full matches</label></div>
+        <div class="seg">
+          <label for="maxMissing">Max missing:</label>
+          <input id="maxMissing" type="range" min="0" max="10" step="1" value="4">
+          <span id="maxMissingVal">4</span>
+        </div>
+        <div class="seg">
+          <label for="sortBy">Sort</label>
+          <select id="sortBy">
+            <option value="best">Best match</option>
+            <option value="missing">Fewest missing</option>
+            <option value="coverage">Most coverage</option>
+          </select>
+        </div>
+        <div class="seg" id="resultsStatus"></div>
+      </div>
+
+      <div id="resultsBody" class="dialog-body"></div>
+    </div>
+  </div>
+
+<script>
+/* ---------------- Data ---------------- */
+const CATEGORY_DATA = [
+  { key:'meats', label:'Meats', icon:'🍖', items:['chicken','pork','beef','ground beef','bacon','ham','lamb'] },
+  { key:'seafood', label:'Seafood', icon:'🍤', items:['shrimp','tuna','salmon','tilapia','crab','squid'] },
+  { key:'grains', label:'Grains & Pasta', icon:'🍙', items:['rice','pasta','noodles','quinoa','oats','bread crumbs'] },
+  { key:'veggies', label:'Vegetables', icon:'🥦', items:['tomato','onion','garlic','carrot','potato','spinach','bell pepper'] },
+  { key:'fruits', label:'Fruits', icon:'🍌', items:['banana','apple','mango','pineapple','lemon','lime'] },
+  { key:'dairy', label:'Dairy & Eggs', icon:'🥛', items:['egg','milk','butter','cheese','yogurt','cream'] },
+  { key:'bread', label:'Bread', icon:'🥖', items:['loaf bread','tortilla','baguette','pita','bun'] },
+  { key:'condiments', label:'Condiments', icon:'🧂', items:['soy sauce','vinegar','ketchup','mayonnaise','mustard','fish sauce','olive oil'] },
+];
+
+const REGION_DATA = [
+  { key:'asia',          label:'Asia',          icon:'🌏', countries:['Japan','China','India','Thailand','South Korea','Vietnam','Indonesia','Philippines'] },
+  { key:'europe',        label:'Europe',        icon:'🌍', countries:['Italy','France','Spain','Greece','Germany','United Kingdom','Sweden','Poland'] },
+  { key:'africa',        label:'Africa',        icon:'🪘', countries:['Morocco','Nigeria','Egypt','Ethiopia','Kenya','South Africa','Ghana','Tunisia'] },
+  { key:'north-america', label:'North America', icon:'🗽', countries:['United States','Canada','Mexico','Cuba','Jamaica','Guatemala','Costa Rica','Panama'] },
+  { key:'south-america', label:'South America', icon:'🦙', countries:['Brazil','Argentina','Peru','Chile','Colombia','Venezuela','Ecuador','Uruguay'] },
+  { key:'middle-east',   label:'Middle East',   icon:'🌙', countries:['Turkey','Israel','Lebanon','Iran','Saudi Arabia','Jordan','Armenia','Georgia'] },
+  { key:'oceania',       label:'Oceania',       icon:'🌊', countries:['Australia','New Zealand','Fiji','Samoa','Papua New Guinea','Tonga','Solomon Islands','Vanuatu'] },
+  { key:'caribbean',     label:'Caribbean',     icon:'🏝️', countries:['Puerto Rico','Dominican Republic','Trinidad & Tobago','Haiti','Barbados','Bahamas','Cuba','Jamaica'] },
+];
+
+/* ---------------- State ---------------- */
+const state = { ingredients:new Set(), countries:new Set() };
+let latestResults = []; // last API results with scores
+
+/* ---------------- DOM ---------------- */
+const categoryGrid = document.getElementById('categoryGrid');
+const regionGrid   = document.getElementById('regionGrid');
+const cartTags     = document.getElementById('cartTags');
+const cartTitle    = document.getElementById('cartTitle');
+const input        = document.getElementById('ingredientInput');
+const addInside    = document.getElementById('addInside');
+const clearBtn     = document.getElementById('clearBtn');
+const surpriseBtn  = document.getElementById('surpriseBtn');
+const generateBtn  = document.getElementById('generateBtn');
+const burger       = document.getElementById('burger');
+const navMenu      = document.getElementById('navMenu');
+
+/* Picker modal */
+const modal      = document.getElementById('pickerModal');
+const modalTitle = document.getElementById('pickerTitle');
+const modalSub   = document.getElementById('pickerSub');
+const modalBody  = document.getElementById('pickerBody');
+const confirmBtn = document.getElementById('confirmBtn');
+
+/* Results modal */
+const resultsModal  = document.getElementById('resultsModal');
+const resultsBody   = document.getElementById('resultsBody');
+const resultsStatus = document.getElementById('resultsStatus');
+const onlyFull      = document.getElementById('onlyFull');
+const maxMissing    = document.getElementById('maxMissing');
+const maxMissingVal = document.getElementById('maxMissingVal');
+const sortBy        = document.getElementById('sortBy');
+
+/* ---------------- Nav ---------------- */
+burger?.addEventListener('click', ()=> {
+  const open = navMenu.classList.toggle('open');
+  burger.setAttribute('aria-expanded', String(open));
+});
+
+/* ---------------- Render Category Cards ---------------- */
+function renderCategories(){
+  categoryGrid.innerHTML='';
+  CATEGORY_DATA.forEach(cat=>{
+    const card=document.createElement('div');
+    card.className='category-card';
+    card.innerHTML=`
+      <div class="cat-title"><span class="emoji">${cat.icon}</span> ${cat.label}</div>
+      <span class="sel-badge hidden" data-badge="${cat.key}"></span>
+      <div class="cat-sub">Tap to choose</div>`;
+    card.addEventListener('click',()=>openPicker({
+      title:`${cat.icon} ${cat.label}`,
+      subtitle:'Tap items to select, then confirm',
+      items:cat.items,
+      seed:()=>new Set(cat.items.filter(i=>state.ingredients.has(i))),
+      apply:(temp)=>{ cat.items.forEach(i=>state.ingredients.delete(i)); temp.forEach(i=>state.ingredients.add(i)); },
+      ctaText:'Add to My Ingredients'
+    }, card));
+    categoryGrid.appendChild(card);
+  });
+  updateCategoryCounts();
+}
+
+/* ---------------- Render Region Cards ---------------- */
+function renderRegions(){
+  regionGrid.innerHTML='';
+  REGION_DATA.forEach(r=>{
+    const card=document.createElement('div');
+    card.className='category-card';
+    card.innerHTML=`
+      <div class="cat-title"><span class="emoji">${r.icon}</span> ${r.label}</div>
+      <span class="sel-badge hidden" data-region-badge="${r.key}"></span>
+      <div class="cat-sub">Tap to choose</div>`;
+    card.addEventListener('click',()=>openPicker({
+      title:`${r.icon} ${r.label}`,
+      subtitle:'Tap countries to select, then confirm',
+      items:r.countries,
+      seed:()=>new Set(r.countries.filter(c=>state.countries.has(c))),
+      apply:(temp)=>{ r.countries.forEach(c=>state.countries.delete(c)); temp.forEach(c=>state.countries.add(c)); },
+      ctaText:'Add Countries'
+    }, card));
+    regionGrid.appendChild(card);
+  });
+  updateRegionCounts();
+}
+
+/* ---------------- Modal Picker ---------------- */
+let lastFocusEl = null, tempSet=null;
+function openPicker(cfg, anchorEl){
+  lastFocusEl = anchorEl || document.activeElement;
+  tempSet = cfg.seed();
+  modalTitle.textContent = cfg.title;
+  modalSub.textContent   = cfg.subtitle;
+  confirmBtn.textContent = cfg.ctaText || 'Confirm';
+
+  const draw = ()=>{
+    modalBody.innerHTML = `<div class="chips">${
+      cfg.items.map(v=>`<span class="chip ${tempSet.has(v)?'is-selected':''}" data-val="${v}">${v}</span>`).join('')
+    }</div>`;
+  };
+  draw();
+
+  modalBody.onclick = (e)=>{
+    const chip=e.target.closest('.chip'); if(!chip) return;
+    const val=chip.dataset.val;
+    tempSet.has(val) ? tempSet.delete(val) : tempSet.add(val);
+    draw();
+  };
+  confirmBtn.onclick = ()=>{
+    cfg.apply(tempSet);
+    renderCart();
+    closeModal();
+  };
+  showModal();
+}
+function showModal(){ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); confirmBtn.focus(); }
+function closeModal(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); confirmBtn.onclick=null; if(lastFocusEl?.focus) lastFocusEl.focus(); }
+modal.addEventListener('click',(e)=>{ if(e.target.closest('[data-dismiss]')) closeModal(); });
+modal.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closeModal(); });
+
+/* ---------------- Cart & Counts ---------------- */
+function renderCart(){
+  cartTags.innerHTML='';
+  const ings=[...state.ingredients], cts=[...state.countries];
+  cartTitle.textContent = (ings.length+cts.length) ? 'My Ingredients & Cuisines' : 'Add ingredients or pick at least one category/cuisine.';
+  ings.forEach(i=>{
+    const tag=document.createElement('span');
+    tag.className='itag';
+    tag.innerHTML=`${capitalize(i)} <button aria-label="Remove ${i}" data-x="${i}" data-xtype="ing">✕</button>`;
+    cartTags.appendChild(tag);
+  });
+  cts.forEach(c=>{
+    const tag=document.createElement('span');
+    tag.className='itag country';
+    tag.innerHTML=`${c} <button aria-label="Remove ${c}" data-x="${c}" data-xtype="ctr">✕</button>`;
+    cartTags.appendChild(tag);
+  });
+  updateCategoryCounts(); updateRegionCounts();
+}
+cartTags.addEventListener('click',(e)=>{
+  const btn=e.target.closest('button[data-x]'); if(!btn) return;
+  if(btn.dataset.xtype==='ctr'){ state.countries.delete(btn.dataset.x); }
+  else { state.ingredients.delete(btn.dataset.x.toLowerCase()); }
+  renderCart();
+});
+function updateCategoryCounts(){
+  CATEGORY_DATA.forEach(cat=>{
+    const count=cat.items.reduce((n,i)=>n+(state.ingredients.has(i)?1:0),0);
+    const badge=document.querySelector(`[data-badge="${cat.key}"]`);
+    if(!badge) return; if(count>0){ badge.textContent=count; badge.classList.remove('hidden'); } else { badge.textContent=''; badge.classList.add('hidden'); }
+  });
+}
+function updateRegionCounts(){
+  REGION_DATA.forEach(r=>{
+    const count=r.countries.reduce((n,c)=>n+(state.countries.has(c)?1:0),0);
+    const badge=document.querySelector(`[data-region-badge="${r.key}"]`);
+    if(!badge) return; if(count>0){ badge.textContent=count; badge.classList.remove('hidden'); } else { badge.textContent=''; badge.classList.add('hidden'); }
+  });
+}
+
+/* ---------------- Input & Buttons ---------------- */
+function capitalize(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : ''; }
+function commitInput(){
+  const parts=input.value.split(',').map(s=>s.trim()).filter(Boolean);
+  parts.forEach(p=>state.ingredients.add(p.toLowerCase()));
+  input.value=''; renderCart();
+}
+addInside.addEventListener('click', commitInput);
+input.addEventListener('keydown',(e)=>{ if(e.key==='Enter'){ e.preventDefault(); commitInput(); }});
+input.addEventListener('input',()=>{
+  if(input.value.includes(',')){
+    const arr=input.value.split(','), last=arr.pop();
+    arr.map(s=>s.trim()).filter(Boolean).forEach(p=>state.ingredients.add(p.toLowerCase()));
+    input.value=last.trim(); renderCart();
+  }
+});
+clearBtn.addEventListener('click',()=>{ state.ingredients.clear(); state.countries.clear(); renderCart(); latestResults=[]; resultsBody.innerHTML=''; resultsStatus.textContent=''; });
+surpriseBtn.addEventListener('click',()=>{
+  if(state.countries.size===0){
+    const reg=REGION_DATA[Math.floor(Math.random()*REGION_DATA.length)];
+    const country=reg.countries[Math.floor(Math.random()*reg.countries.length)];
+    state.countries.add(country);
+  } else {
+    const pool=CATEGORY_DATA.flatMap(c=>c.items);
+    const pick=pool[Math.floor(Math.random()*pool.length)];
+    state.ingredients.add(pick);
+  }
+  renderCart();
+});
+
+/* ---------------- Results Modal controls ---------------- */
+function openResults(){ resultsModal.classList.add('open'); resultsModal.setAttribute('aria-hidden','false'); }
+function closeResults(){ resultsModal.classList.remove('open'); resultsModal.setAttribute('aria-hidden','true'); }
+resultsModal.addEventListener('click',(e)=>{ if(e.target.closest('[data-close-results]')) closeResults(); });
+resultsModal.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closeResults(); });
+maxMissing.addEventListener('input', ()=>{ maxMissingVal.textContent=maxMissing.value; applyFiltersAndRender(); });
+onlyFull.addEventListener('change', applyFiltersAndRender);
+sortBy.addEventListener('change', applyFiltersAndRender);
+
+/* ---------------- Ingredient normalization ---------------- */
+const SYNONYMS = new Map([
+  ['ground beef','beef'], ['minced beef','beef'],
+  ['scallion','green onion'], ['spring onion','green onion'],
+  ['bell pepper','pepper'], ['capsicum','pepper'],
+  ['chili','chile'], ['chilli','chile'],
+  ['olive oil','oil'], ['vegetable oil','oil'],
+  ['soy sauce','soysauce'], ['fish sauce','fishsauce'],
+]);
+function norm(x){
+  let s = x.toLowerCase().trim();
+  s = s.replace(/\s+/g,' ');
+  if(SYNONYMS.has(s)) s = SYNONYMS.get(s);
+  return s;
+}
+
+/* ---------------- SuperCook-style matcher ---------------- */
+function scoreRecipe(recipe, inputSet, chosenCountries){
+  const recSet = new Set((recipe.ingredients || []).map(norm));
+  let matched=0;
+  const matchedList=[], missingList=[];
+  inputSet.forEach(i=>{ if(recSet.has(i)){ matched++; matchedList.push(i);} });
+
+  recSet.forEach(i=>{ if(!inputSet.has(i)) missingList.push(i); });
+
+  const coverage = inputSet.size ? matched / inputSet.size : 0;
+  const missing = missingList.length;
+
+  let cuisineBoost = 0;
+  if(chosenCountries.size){
+    if(recipe.country && chosenCountries.has(recipe.country)) cuisineBoost = 0.05;
+    const cu = (recipe.cuisine || '').toLowerCase();
+    if(cu && [...chosenCountries].some(c=>cu.includes(c.toLowerCase().slice(0,4)))){
+      cuisineBoost = Math.max(cuisineBoost, 0.03);
+    }
+  }
+  const score = coverage*0.7 + (1/(1+missing))*0.25 + cuisineBoost;
+  return {score, coverage, missing, matchedList, missingList};
+}
+
+/* Apply filters on latestResults and render */
+function applyFiltersAndRender(){
+  if(!latestResults.length){
+    resultsBody.innerHTML = `<div class="loading">No results yet. Add ingredients and tap Generate Recipes.</div>`;
+    resultsStatus.textContent = '';
+    return;
+  }
+  let list = [...latestResults];
+  const maxMiss = parseInt(maxMissing.value,10);
+  list = list.filter(r=> r.missing <= maxMiss);
+  if(onlyFull.checked){
+    list = list.filter(r=> r.coverage === 1 && r.missing === 0);
+  }
+  const mode = sortBy.value;
+  if(mode==='missing') list.sort((a,b)=> a.missing - b.missing || b.coverage - a.coverage);
+  else if(mode==='coverage') list.sort((a,b)=> b.coverage - a.coverage || a.missing - b.missing);
+  else list.sort((a,b)=> b.score - a.score);
+
+  renderRecipeResults(list);
+}
+
+/* Render recipe cards */
+function renderRecipeResults(list){
+  resultsStatus.textContent = `${list.length} result${list.length!==1?'s':''}`;
+  if(!list.length){
+    resultsBody.innerHTML = `<div class="loading">No matches for this filter. Try increasing “Max missing” or untick “Only full matches”.</div>`;
+    return;
+  }
+  const grid = document.createElement('div');
+  grid.className = 'recipes';
+  grid.innerHTML = list.map(r => {
+    const pct = Math.round(r.coverage*100);
+    const full = (r.coverage===1 && r.missing===0);
+    const missingStr = r.missingList?.slice(0,3).map(capitalize).join(', ') + (r.missingList && r.missingList.length>3?'…':'');
+    return `
+    <article class="recipe-card">
+      <img class="recipe-thumb" src="${r.image || ''}" alt="" onerror="this.style.display='none'"/>
+      <div class="recipe-body">
+        <h3 class="recipe-title">${r.title}</h3>
+        <div class="recipe-meta">
+          <span class="badge">${isNaN(pct)?'—':pct+'% match'}</span>
+          ${full ? `<span class="badge">✅ Uses all you have</span>` :
+            (typeof r.missing==='number' ? `<span class="missing">+${r.missing} needed${r.missing?': '+(missingStr||'') : ''}</span>` : '')
+          }
+          <span>${capitalize(r.cuisine || '')}${r.country ? ' • '+r.country : ''}${r.source ? ' • '+r.source : ''}</span>
+        </div>
+      </div>
+      <div class="recipe-actions">
+        <a href="${r.url || '#'}" target="_blank" rel="noopener">Open</a>
+      </div>
+    </article>`;
+  }).join('');
+  resultsBody.innerHTML = '';
+  resultsBody.appendChild(grid);
+}
+
+/* ---------------- Generate Recipes (Spoonacular call) ---------------- */
+generateBtn.addEventListener('click', async ()=>{
+  const ingredients = [...state.ingredients];
+  const countries   = [...state.countries];
+
+  if(ingredients.length===0 && countries.length===0){
+    openResults();
+    resultsBody.innerHTML = `<div class="loading">Add at least one ingredient or choose a region first 😊</div>`;
+    resultsStatus.textContent = '';
+    return;
+  }
+
+  resultsBody.innerHTML = `<div class="loading"><span class="spinner"></span><span>Finding real recipes…</span></div>`;
+  resultsStatus.textContent = '';
+  openResults();
+
+  const qParts = [];
+  if(ingredients.length) qParts.push(ingredients.join(', '));
+  if(countries.length) qParts.push(countries.join(' '));
+  const query = qParts.join(' ');
+
+  try{
+    const res = await fetch(`/api/recipes?q=${encodeURIComponent(query)}`);
+    if(!res.ok) throw new Error('Search failed');
+    const data = await res.json();
+
+    const ingSet = new Set(ingredients.map(norm));
+    const countrySet = new Set(countries);
+    latestResults = (data.results || []).map(r => {
+      const scored = scoreRecipe(r, ingSet, countrySet);
+      return {...r, ...scored};
+    });
+
+    if(!latestResults.length){
+      resultsBody.innerHTML = `<div class="loading">No recipes found yet. Try fewer ingredients or remove some filters.</div>`;
+      resultsStatus.textContent = '';
+      return;
+    }
+
+    maxMissingVal.textContent = maxMissing.value;
+    applyFiltersAndRender();
+  } catch(err){
+    console.error(err);
+    resultsBody.innerHTML = `<div class="loading">Error contacting recipe service. Please try again later.</div>`;
+    resultsStatus.textContent = '';
+  }
+});
+
+/* ---------------- Boot ---------------- */
+renderCategories(); renderRegions(); renderCart();
+</script>
+</body>
+</html>
