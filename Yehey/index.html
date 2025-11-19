@@ -74,7 +74,7 @@
   .chip{background:#f3faf4;border:1px solid rgba(122,158,126,.35);color:#234;padding:8px 10px;border-radius:999px;font-size:13px;cursor:pointer;white-space:nowrap}
   .chip.is-selected{background:var(--accent);color:#fff;border-color:rgba(122,158,126,.85)}
 
-  /* Modal (picker + results + details) */
+  /* Modal (picker + results) */
   .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1000}
   .modal.open{display:flex}
   .backdrop{position:absolute;inset:0;background:rgba(15,23,42,.32)}
@@ -99,138 +99,26 @@
   }
   .btn-primary:hover{filter:brightness(.98)}
 
-  /* Results toolbar + grid */
+  /* Results grid */
   .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
   .toolbar .seg{display:flex;gap:6px;align-items:center;color:#475569;font-size:13px}
   .recipes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
   @media (max-width:980px){ .recipes{grid-template-columns:repeat(2,1fr)} }
   @media (max-width:640px){ .recipes{grid-template-columns:1fr} }
 
-  /* Recipe card design */
   .recipe-card{
-    position:relative;
-    display:flex;
-    flex-direction:column;
-    overflow:hidden;
-    border-radius:20px;
-    background:#ffffff;
-    border:1px solid rgba(15,23,42,.05);
-    box-shadow:var(--shadow);
-    transition:transform .18s ease, box-shadow .18s ease;
+    display:flex;flex-direction:column;overflow:hidden;border-radius:16px;
+    border:1px solid rgba(15,23,42,.06);background:#fff;box-shadow:var(--shadow);
   }
-  .recipe-card:hover{
-    transform:translateY(-2px);
-    box-shadow:0 20px 40px rgba(15,23,42,.16);
-  }
-  .recipe-media{
-    position:relative;
-    aspect-ratio:4/3;
-    background:#e2e8f0;
-    overflow:hidden;
-  }
-  .recipe-image{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
-    transition:transform .25s ease;
-  }
-  .recipe-card:hover .recipe-image{
-    transform:scale(1.05);
-  }
-  .recipe-gradient{
-    position:absolute;
-    inset:0;
-    background:linear-gradient(to top,rgba(15,23,42,.55),rgba(15,23,42,0.05));
-    pointer-events:none;
-  }
-  .recipe-pill-row{
-    position:absolute;
-    top:10px;
-    left:10px;
-    right:10px;
-    display:flex;
-    justify-content:space-between;
-    gap:6px;
-    font-size:11px;
-  }
-  .pill{
-    display:inline-flex;
-    align-items:center;
-    gap:4px;
-    padding:4px 8px;
-    border-radius:999px;
-    background:rgba(15,23,42,.72);
-    color:#e5e7eb;
-    backdrop-filter:blur(6px);
-  }
-  .pill-strong{
-    background:rgba(16,185,129,.92);
-    color:#ecfdf5;
-  }
-  .pill-missing{
-    background:rgba(248,250,252,.92);
-    color:#9a3412;
-  }
-  .pill-missing span{
-    white-space:nowrap;
-  }
-
-  .recipe-body{padding:12px 12px 10px}
-  .recipe-title{font-weight:700;margin:0 0 4px;font-size:15.5px;line-height:1.3}
-  .recipe-meta-top{
-    display:flex;
-    flex-wrap:wrap;
-    gap:6px;
-    font-size:11.5px;
-    color:#64748b;
-    margin-bottom:6px;
-  }
-  .meta-chip{
-    padding:4px 8px;
-    border-radius:999px;
-    background:#f1f5f9;
-  }
-  .recipe-uses{
-    font-size:12.5px;
-    color:#475569;
-  }
-  .recipe-uses span{
-    color:#0f172a;
-    font-weight:500;
-  }
-
-  .recipe-actions{
-    display:flex;
-    gap:8px;
-    padding:10px 12px 12px;
-    border-top:1px solid rgba(15,23,42,.06);
-  }
-  .recipe-actions a{
-    flex:1;
-    text-align:center;
-    text-decoration:none;
-    border:1px solid rgba(15,23,42,.12);
-    padding:8px 10px;
-    border-radius:12px;
-    color:#0f172a;
-    font-weight:600;
-    font-size:13px;
-    background:#ffffff;
-  }
-  .recipe-actions a.primary{
-    background:var(--accent);
-    color:#ffffff;
-    border-color:var(--accent);
-  }
-  .recipe-actions a.secondary{
-    background:#f8fafc;
-    color:#0f172a;
-  }
-  .recipe-actions a:hover{
-    box-shadow:var(--shadow);
-  }
-
+  .recipe-thumb{aspect-ratio:16/9;object-fit:cover;background:#f1f5f9}
+  .recipe-body{padding:12px}
+  .recipe-title{font-weight:700;margin:0 0 6px;font-size:16px;line-height:1.3}
+  .recipe-meta{display:flex;gap:8px;align-items:center;color:#64748b;font-size:12px;flex-wrap:wrap}
+  .badge{border:1px solid #d1fae5;background:#ecfdf5;border-radius:999px;font-size:11px;padding:4px 8px;color:#065f46}
+  .missing{color:#9a3412;background:#fff7ed;border:1px solid #fed7aa;border-radius:999px;padding:3px 8px;font-size:11px}
+  .recipe-actions{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(15,23,42,.06)}
+  .recipe-actions a{flex:1;text-align:center;text-decoration:none;border:1px solid rgba(15,23,42,.12);padding:8px;border-radius:10px;color:#0f172a;font-weight:600}
+  .recipe-actions a:hover{box-shadow:var(--shadow)}
   .loading{display:flex;gap:10px;align-items:center;justify-content:center;padding:28px 6px;color:#64748b}
   .spinner{width:18px;height:18px;border:3px solid #e5e7eb;border-top-color:var(--accent);border-radius:999px;animation:sp 0.9s linear infinite}
   @keyframes sp{to{transform:rotate(1turn)}}
@@ -253,32 +141,6 @@
   @media (max-width:640px){.cart-inner{flex-wrap:wrap}.cart-tags{max-height:120px}}
 
   .footer{font-size:12px;color:#94a3b8;display:flex;gap:14px;align-items:center;justify-content:center;margin-top:26px}
-
-  /* Details modal specific */
-  .detail-main{display:flex;gap:18px;flex-wrap:wrap}
-  .detail-image{
-    flex:0 0 260px;
-    max-width:100%;
-    border-radius:18px;
-    object-fit:cover;
-    background:#e2e8f0;
-    box-shadow:var(--shadow);
-  }
-  .detail-info{flex:1;min-width:220px}
-  .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
-  .tag-pill{
-    font-size:11px;
-    padding:4px 8px;
-    border-radius:999px;
-    background:#f1f5f9;
-    color:#475569;
-  }
-  .detail-meta{font-size:13px;color:#475569;margin-bottom:10px}
-  .detail-section{margin-top:12px}
-  .detail-section h4{margin:0 0 6px;font-size:14px}
-  .detail-section ul{margin:0;padding-left:18px;font-size:13px;color:#1f2933}
-  .detail-section li{margin-bottom:4px}
-  .detail-text{font-size:13px;color:#1f2933;line-height:1.5;white-space:pre-line}
 </style>
 </head>
 <body>
@@ -409,33 +271,102 @@
     </div>
   </div>
 
-  <!-- DETAILS MODAL -->
-  <div id="detailModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
-    <div class="backdrop" data-close-detail></div>
-    <div class="dialog" role="document">
-      <div class="dialog-header">
-        <div id="detailTitle" class="dialog-title">Recipe details</div>
-        <button class="xbtn" data-close-detail aria-label="Close">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M6 6l12 12M18 6L6 18" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
-      <div id="detailBody" class="dialog-body"></div>
-    </div>
-  </div>
-
 <script>
 /* ---------------- Data ---------------- */
 const CATEGORY_DATA = [
-  { key:'meats', label:'Meats', icon:'🍖', items:['chicken','pork','beef','ground beef','bacon','ham','lamb'] },
-  { key:'seafood', label:'Seafood', icon:'🍤', items:['shrimp','tuna','salmon','tilapia','crab','squid'] },
-  { key:'grains', label:'Grains & Pasta', icon:'🍙', items:['rice','pasta','noodles','quinoa','oats','bread crumbs'] },
-  { key:'veggies', label:'Vegetables', icon:'🥦', items:['tomato','onion','garlic','carrot','potato','spinach','bell pepper'] },
-  { key:'fruits', label:'Fruits', icon:'🍌', items:['banana','apple','mango','pineapple','lemon','lime'] },
-  { key:'dairy', label:'Dairy & Eggs', icon:'🥛', items:['egg','milk','butter','cheese','yogurt','cream'] },
-  { key:'bread', label:'Bread', icon:'🥖', items:['loaf bread','tortilla','baguette','pita','bun'] },
-  { key:'condiments', label:'Condiments', icon:'🧂', items:['soy sauce','vinegar','ketchup','mayonnaise','mustard','fish sauce','olive oil'] },
+  {
+    key:'meats',
+    label:'Meats',
+    icon:'🍖',
+    items:[
+      'chicken breast','chicken thigh','whole chicken',
+      'pork','pork belly','ground pork',
+      'beef','ground beef','beef steak',
+      'bacon','ham','sausage','hotdog',
+      'lamb','chorizo'
+    ]
+  },
+  {
+    key:'seafood',
+    label:'Seafood',
+    icon:'🍤',
+    items:[
+      'shrimp','tuna','salmon','tilapia','bangus (milkfish)',
+      'crab','squid','octopus','mussels','clams',
+      'sardines (canned)','anchovies','fish fillet'
+    ]
+  },
+  {
+    key:'grains',
+    label:'Grains & Pasta',
+    icon:'🍙',
+    items:[
+      'white rice','brown rice','jasmine rice',
+      'pasta','spaghetti','macaroni',
+      'noodles','instant noodles','rice noodles',
+      'quinoa','oats','bread crumbs',
+      'flour','cornstarch','tortilla wraps'
+    ]
+  },
+  {
+    key:'veggies',
+    label:'Vegetables',
+    icon:'🥦',
+    items:[
+      'tomato','onion','red onion','garlic','ginger',
+      'carrot','potato','sweet potato',
+      'eggplant','okra','ampalaya (bitter gourd)',
+      'cabbage','pechay','spinach','lettuce',
+      'bell pepper','chili pepper','green beans',
+      'broccoli','cauliflower'
+    ]
+  },
+  {
+    key:'fruits',
+    label:'Fruits',
+    icon:'🍌',
+    items:[
+      'banana','apple','mango','pineapple',
+      'orange','lemon','lime','calamansi',
+      'grapes','strawberry','avocado',
+      'watermelon','papaya'
+    ]
+  },
+  {
+    key:'dairy',
+    label:'Dairy & Eggs',
+    icon:'🥛',
+    items:[
+      'egg','egg yolk','egg white',
+      'milk','evaporated milk','condensed milk',
+      'butter','margarine','cheese','cream cheese',
+      'parmesan','yogurt','all-purpose cream'
+    ]
+  },
+  {
+    key:'bread',
+    label:'Bread',
+    icon:'🥖',
+    items:[
+      'loaf bread','whole wheat bread','pandesal',
+      'baguette','burger buns','hotdog buns',
+      'pita','tortilla','flatbread'
+    ]
+  },
+  {
+    key:'condiments',
+    label:'Condiments',
+    icon:'🧂',
+    items:[
+      'salt','black pepper','sugar','brown sugar','honey',
+      'soy sauce','vinegar','cane vinegar',
+      'fish sauce','oyster sauce','banana ketchup',
+      'ketchup','mayonnaise','mustard',
+      'olive oil','vegetable oil','sesame oil',
+      'chili sauce','sriracha','hoisin sauce',
+      'gochujang','bagoong (shrimp paste)'
+    ]
+  }
 ];
 
 const REGION_DATA = [
@@ -448,6 +379,34 @@ const REGION_DATA = [
   { key:'oceania',       label:'Oceania',       icon:'🌊', countries:['Australia','New Zealand','Fiji','Samoa','Papua New Guinea','Tonga','Solomon Islands','Vanuatu'] },
   { key:'caribbean',     label:'Caribbean',     icon:'🏝️', countries:['Puerto Rico','Dominican Republic','Trinidad & Tobago','Haiti','Barbados','Bahamas','Cuba','Jamaica'] },
 ];
+
+/* Map country → Spoonacular cuisine slug */
+const COUNTRY_TO_CUISINE = {
+  'Philippines':'filipino',
+  'Japan':'japanese',
+  'China':'chinese',
+  'India':'indian',
+  'Thailand':'thai',
+  'South Korea':'korean',
+  'Vietnam':'vietnamese',
+  'Indonesia':'indonesian',
+  'Italy':'italian',
+  'France':'french',
+  'Spain':'spanish',
+  'Greece':'greek',
+  'Germany':'german',
+  'United Kingdom':'british',
+  'Mexico':'mexican',
+  'United States':'american',
+  'Canada':'american',
+  'Brazil':'brazilian',
+  'Argentina':'argentinian',
+  'Morocco':'moroccan',
+  'Turkey':'mediterranean',
+  'Lebanon':'middle eastern',
+  'Israel':'middle eastern',
+  'Australia':'australian'
+};
 
 /* ---------------- State ---------------- */
 const state = { ingredients:new Set(), countries:new Set() };
@@ -481,11 +440,6 @@ const onlyFull      = document.getElementById('onlyFull');
 const maxMissing    = document.getElementById('maxMissing');
 const maxMissingVal = document.getElementById('maxMissingVal');
 const sortBy        = document.getElementById('sortBy');
-
-/* Details modal */
-const detailModal  = document.getElementById('detailModal');
-const detailBody   = document.getElementById('detailBody');
-const detailTitle  = document.getElementById('detailTitle');
 
 /* ---------------- Nav ---------------- */
 burger?.addEventListener('click', ()=> {
@@ -629,7 +583,14 @@ input.addEventListener('input',()=>{
     input.value=last.trim(); renderCart();
   }
 });
-clearBtn.addEventListener('click',()=>{ state.ingredients.clear(); state.countries.clear(); renderCart(); latestResults=[]; resultsBody.innerHTML=''; resultsStatus.textContent=''; });
+clearBtn.addEventListener('click',()=>{
+  state.ingredients.clear();
+  state.countries.clear();
+  renderCart();
+  latestResults=[];
+  resultsBody.innerHTML='';
+  resultsStatus.textContent='';
+});
 surpriseBtn.addEventListener('click',()=>{
   if(state.countries.size===0){
     const reg=REGION_DATA[Math.floor(Math.random()*REGION_DATA.length)];
@@ -652,20 +613,43 @@ maxMissing.addEventListener('input', ()=>{ maxMissingVal.textContent=maxMissing.
 onlyFull.addEventListener('change', applyFiltersAndRender);
 sortBy.addEventListener('change', applyFiltersAndRender);
 
-/* ---------------- Details modal controls ---------------- */
-function openDetailModal(){ detailModal.classList.add('open'); detailModal.setAttribute('aria-hidden','false'); }
-function closeDetailModal(){ detailModal.classList.remove('open'); detailModal.setAttribute('aria-hidden','true'); }
-detailModal.addEventListener('click',(e)=>{ if(e.target.closest('[data-close-detail]')) closeDetailModal(); });
-detailModal.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closeDetailModal(); });
-
-/* ---------------- Ingredient normalization ---------------- */
+/* ---------------- Ingredient normalization + SYNONYMS (UPDATED) ---------------- */
 const SYNONYMS = new Map([
-  ['ground beef','beef'], ['minced beef','beef'],
-  ['scallion','green onion'], ['spring onion','green onion'],
-  ['bell pepper','pepper'], ['capsicum','pepper'],
-  ['chili','chile'], ['chilli','chile'],
-  ['olive oil','oil'], ['vegetable oil','oil'],
-  ['soy sauce','soysauce'], ['fish sauce','fishsauce'],
+  ['ground beef','beef'],
+  ['minced beef','beef'],
+  ['beef steak','beef'],
+  ['chicken breast','chicken'],
+  ['chicken thigh','chicken'],
+  ['whole chicken','chicken'],
+  ['ground pork','pork'],
+  ['pork belly','pork'],
+  ['sardines (canned)','sardines'],
+  ['bangus (milkfish)','milkfish'],
+  ['ampalaya (bitter gourd)','bitter gourd'],
+  ['red onion','onion'],
+  ['spring onion','green onion'],
+  ['scallion','green onion'],
+  ['bell pepper','pepper'],
+  ['capsicum','pepper'],
+  ['chili','chile'],
+  ['chilli','chile'],
+  ['calamansi','lime'],
+  ['brown sugar','sugar'],
+  ['evaporated milk','milk'],
+  ['condensed milk','milk'],
+  ['all-purpose cream','cream'],
+  ['loaf bread','bread'],
+  ['whole wheat bread','bread'],
+  ['pandesal','bread'],
+  ['burger buns','bread'],
+  ['hotdog buns','bread'],
+  ['banana ketchup','ketchup'],
+  ['cane vinegar','vinegar'],
+  ['olive oil','oil'],
+  ['vegetable oil','oil'],
+  ['soy sauce','soysauce'],
+  ['fish sauce','fishsauce'],
+  ['bagoong (shrimp paste)','shrimp paste'],
 ]);
 function norm(x){
   let s = x.toLowerCase().trim();
@@ -719,7 +703,7 @@ function applyFiltersAndRender(){
   renderRecipeResults(list);
 }
 
-/* Render recipe cards with Details button */
+/* Render recipe cards */
 function renderRecipeResults(list){
   resultsStatus.textContent = `${list.length} result${list.length!==1?'s':''}`;
   if(!list.length){
@@ -729,39 +713,24 @@ function renderRecipeResults(list){
   const grid = document.createElement('div');
   grid.className = 'recipes';
   grid.innerHTML = list.map(r => {
-    const pct = isNaN(r.coverage) ? null : Math.round(r.coverage*100);
+    const pct = Math.round(r.coverage*100);
     const full = (r.coverage===1 && r.missing===0);
-    const missingCount = typeof r.missing==='number' ? r.missing : null;
-    const usesStr = (r.matchedList || []).slice(0,4).map(capitalize).join(', ');
-    const cuisineLabel = r.cuisine ? capitalize(r.cuisine) : '';
-    const sourceLabel = r.source || '';
-    const metaPieces = [];
-    if(cuisineLabel) metaPieces.push(cuisineLabel);
-    if(r.country) metaPieces.push(r.country);
-    if(sourceLabel) metaPieces.push(sourceLabel);
-
+    const missingStr = r.missingList?.slice(0,3).map(capitalize).join(', ') + (r.missingList && r.missingList.length>3?'…':'');
     return `
     <article class="recipe-card">
-      <div class="recipe-media">
-        ${r.image ? `<img class="recipe-image" src="${r.image}" alt="${r.title}">` : ''}
-        <div class="recipe-gradient"></div>
-        <div class="recipe-pill-row">
-          <div class="pill${full ? ' pill-strong':''}">
-            ${pct !== null ? `${pct}% match` : 'Match'}
-          </div>
-          ${missingCount !== null ? `<div class="pill pill-missing"><span>+${missingCount} ingredient${missingCount===1?'':'s'}</span></div>` : ''}
-        </div>
-      </div>
+      <img class="recipe-thumb" src="${r.image || ''}" alt="" onerror="this.style.display='none'"/>
       <div class="recipe-body">
         <h3 class="recipe-title">${r.title}</h3>
-        <div class="recipe-meta-top">
-          ${metaPieces.length ? `<div class="meta-chip">${metaPieces.join(' • ')}</div>` : ''}
+        <div class="recipe-meta">
+          <span class="badge">${isNaN(pct)?'—':pct+'% match'}</span>
+          ${full ? `<span class="badge">✅ Uses all you have</span>` :
+            (typeof r.missing==='number' ? `<span class="missing">+${r.missing} needed${r.missing?': '+(missingStr||'') : ''}</span>` : '')
+          }
+          <span>${capitalize(r.cuisine || '')}${r.country ? ' • '+r.country : ''}${r.source ? ' • '+r.source : ''}</span>
         </div>
-        ${usesStr ? `<div class="recipe-uses">Uses: <span>${usesStr}</span>${(r.matchedList || []).length>4 ? ' +' + ((r.matchedList||[]).length-4) + ' more' : ''}</div>` : ''}
       </div>
       <div class="recipe-actions">
-        <a class="secondary" href="#" data-details-id="${r.id}">Details</a>
-        <a class="primary" href="${r.url || '#'}" target="_blank" rel="noopener">Open Recipe</a>
+        <a href="${r.url || '#'}" target="_blank" rel="noopener">Open</a>
       </div>
     </article>`;
   }).join('');
@@ -769,66 +738,7 @@ function renderRecipeResults(list){
   resultsBody.appendChild(grid);
 }
 
-/* ---------------- Result list click (Details) ---------------- */
-resultsBody.addEventListener('click', async (e)=>{
-  const btn = e.target.closest('[data-details-id]');
-  if(!btn) return;
-  e.preventDefault();
-  const id = btn.dataset.detailsId;
-  const basic = latestResults.find(r => String(r.id) === String(id));
-  if(!basic) return;
-
-  detailTitle.textContent = basic.title || 'Recipe details';
-  detailBody.innerHTML = `<div class="loading"><span class="spinner"></span><span>Loading recipe details…</span></div>`;
-  openDetailModal();
-
-  try{
-    const res = await fetch(`/api/recipe?id=${encodeURIComponent(id)}`);
-    if(!res.ok) throw new Error('detail fail');
-    const data = await res.json();
-    renderDetail(data, basic);
-  }catch(err){
-    console.error(err);
-    detailBody.innerHTML = `<div class="loading">Couldn’t load full details right now. Please try again later.</div>`;
-  }
-});
-
-/* ---------------- Detail rendering ---------------- */
-function renderDetail(detail, basic){
-  const img = detail.image || basic.image || '';
-  const cuisines = (detail.cuisines && detail.cuisines.join(', ')) || basic.cuisine || '';
-  const diets = (detail.diets && detail.diets.join(', ')) || '';
-  const ready = detail.readyInMinutes ? `${detail.readyInMinutes} min` : '';
-  const servings = detail.servings ? `${detail.servings} servings` : '';
-  const source = detail.sourceName || basic.source || '';
-  const tags = [];
-  if(cuisines) tags.push(cuisines);
-  if(diets) tags.push(diets);
-  if(source) tags.push(`By ${source}`);
-  const metaLines = [];
-  if(ready) metaLines.push(`⏱ ${ready}`);
-  if(servings) metaLines.push(`🍽 ${servings}`);
-
-  const ingList = (detail.ingredients || []).map(i => `<li>${i}</li>`).join('');
-  const instructions = detail.instructions || '';
-  const summary = detail.summary || '';
-
-  detailBody.innerHTML = `
-    <div class="detail-main">
-      ${img ? `<img class="detail-image" src="${img}" alt="${basic.title}">` : ''}
-      <div class="detail-info">
-        ${tags.length ? `<div class="tag-row">${tags.map(t=>`<span class="tag-pill">${t}</span>`).join('')}</div>` : ''}
-        ${metaLines.length ? `<div class="detail-meta">${metaLines.join(' • ')}</div>` : ''}
-        ${summary ? `<div class="detail-section"><h4>Overview</h4><div class="detail-text">${summary}</div></div>` : ''}
-      </div>
-    </div>
-    ${ingList ? `<div class="detail-section"><h4>Ingredients</h4><ul>${ingList}</ul></div>` : ''}
-    ${instructions ? `<div class="detail-section"><h4>Steps</h4><div class="detail-text">${instructions}</div></div>` : ''}
-    ${detail.url ? `<div class="detail-section"><a href="${detail.url}" target="_blank" rel="noopener">Open full recipe on original site →</a></div>` : ''}
-  `;
-}
-
-/* ---------------- Generate Recipes (Spoonacular call) ---------------- */
+/* ---------------- Generate Recipes (Spoonacular call, with cuisine) ---------------- */
 generateBtn.addEventListener('click', async ()=>{
   const ingredients = [...state.ingredients];
   const countries   = [...state.countries];
@@ -844,13 +754,15 @@ generateBtn.addEventListener('click', async ()=>{
   resultsStatus.textContent = '';
   openResults();
 
-  const qParts = [];
-  if(ingredients.length) qParts.push(ingredients.join(', '));
-  if(countries.length) qParts.push(countries.join(' '));
-  const query = qParts.join(' ');
+  const cuisines = countries
+    .map(c => COUNTRY_TO_CUISINE[c])
+    .filter(Boolean);
+  const cuisineParam = cuisines.join(',');
+  const ingredientsQuery = ingredients.join(', ');
 
   try{
-    const res = await fetch(`/api/recipes?q=${encodeURIComponent(query)}`);
+    const url = `/api/recipes?q=${encodeURIComponent(ingredientsQuery)}&cuisine=${encodeURIComponent(cuisineParam)}`;
+    const res = await fetch(url);
     if(!res.ok) throw new Error('Search failed');
     const data = await res.json();
 
@@ -862,7 +774,7 @@ generateBtn.addEventListener('click', async ()=>{
     });
 
     if(!latestResults.length){
-      resultsBody.innerHTML = `<div class="loading">No recipes found yet. Try fewer ingredients or remove some filters.</div>`;
+      resultsBody.innerHTML = `<div class="loading">No recipes found yet. Try fewer ingredients, or just select a region like Philippines and try again.</div>`;
       resultsStatus.textContent = '';
       return;
     }
