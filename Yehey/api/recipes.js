@@ -4,7 +4,7 @@
 export default async function handler(req, res) {
   try {
     const q = (req.query.q || '').toString().slice(0, 300);
-    const cuisine = (req.query.cuisine || '').toString().slice(0, 80);
+    const cuisine = (req.query.cuisine || '').toString().slice(0, 120);
     const key = process.env.SPOONACULAR_KEY; // make sure this is set in Vercel
 
     if (!key) {
@@ -37,31 +37,30 @@ export default async function handler(req, res) {
       const ingredients =
         (item.extendedIngredients || []).map(i => (i.name || '').toLowerCase());
 
-      // Build a plain-text instruction snippet
+      // Prefer Spoonacular’s own URL (you like this) then fallback to source
+      const primaryUrl =
+        item.spoonacularSourceUrl ||
+        item.sourceUrl ||
+        '';
+
+      // Build a clean instructions text if available
       let instructionsText = '';
-      if (Array.isArray(item.analyzedInstructions) && item.analyzedInstructions.length > 0) {
-        const steps = item.analyzedInstructions[0].steps || [];
-        instructionsText = steps.map(s => s.step || '').join(' ');
-      } else if (item.instructions) {
+      if (Array.isArray(item.analyzedInstructions) &&
+          item.analyzedInstructions.length > 0 &&
+          Array.isArray(item.analyzedInstructions[0].steps)) {
+        const steps = item.analyzedInstructions[0].steps;
+        if (steps.length) {
+          instructionsText = steps
+            .map(s => {
+              const num = s.number ? `${s.number}. ` : '';
+              return `${num}${s.step}`.trim();
+            })
+            .join('\n');
+        }
+      }
+      if (!instructionsText && item.instructions) {
         instructionsText = item.instructions;
       }
-
-      // strip HTML tags if any
-      instructionsText = (instructionsText || '')
-        .replace(/<[^>]*>/g, '')
-        .replace(/\s+/g, ' ')
-        .trim();
-
-      // keep it short for the card
-      if (instructionsText.length > 600) {
-        instructionsText = instructionsText.slice(0, 600) + '…';
-      }
-
-      // Prefer original site, then Spoonacular page
-      const primaryUrl =
-        item.sourceUrl ||
-        item.spoonacularSourceUrl ||
-        '';
 
       return {
         id: item.id,
@@ -72,7 +71,7 @@ export default async function handler(req, res) {
         cuisine: (item.cuisines && item.cuisines[0]) || '',
         country: '',
         ingredients,
-        instructions: instructionsText
+        instructions: instructionsText || ''   // 👈 NEW
       };
     });
 
