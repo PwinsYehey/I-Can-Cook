@@ -3,23 +3,32 @@
 
 export default async function handler(req, res) {
   try {
-    const q = (req.query.q || '').toString().slice(0, 300);
+    const rawQ = (req.query.q || '').toString();
+    const q = rawQ.slice(0, 300);          // ingredients query (may be empty)
     const cuisine = (req.query.cuisine || '').toString().slice(0, 120);
     const key = process.env.SPOONACULAR_KEY; // make sure this is set in Vercel
 
     if (!key) {
       return res.status(500).json({ error: 'Missing SPOONACULAR_KEY env var' });
     }
-    if (!q) {
-      return res.status(400).json({ error: 'Missing q parameter' });
+
+    // ❗ Only error if BOTH are missing (no ingredients & no cuisine)
+    if (!q && !cuisine) {
+      return res.status(400).json({ error: 'Missing q or cuisine parameter' });
     }
 
     const url = new URL('https://api.spoonacular.com/recipes/complexSearch');
     url.searchParams.set('apiKey', key);
-    url.searchParams.set('query', q);
     url.searchParams.set('number', '12');              // how many recipes to return
     url.searchParams.set('addRecipeInformation', 'true');
     url.searchParams.set('fillIngredients', 'true');
+
+    // Only send query if we actually have one
+    if (q) {
+      url.searchParams.set('query', q);
+    }
+
+    // Cuisine filter (can be "japanese", "italian,mexican", etc.)
     if (cuisine) {
       url.searchParams.set('cuisine', cuisine);
     }
@@ -37,7 +46,7 @@ export default async function handler(req, res) {
       const ingredients =
         (item.extendedIngredients || []).map(i => (i.name || '').toLowerCase());
 
-      // Prefer Spoonacular’s own URL (you like this) then fallback to source
+      // You prefer Spoonacular’s own page first
       const primaryUrl =
         item.spoonacularSourceUrl ||
         item.sourceUrl ||
@@ -71,7 +80,7 @@ export default async function handler(req, res) {
         cuisine: (item.cuisines && item.cuisines[0]) || '',
         country: '',
         ingredients,
-        instructions: instructionsText || ''   // 👈 NEW
+        instructions: instructionsText || ''
       };
     });
 
@@ -82,3 +91,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Server error' });
   }
 }
+
