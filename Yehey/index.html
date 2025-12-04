@@ -74,7 +74,7 @@
   .chip{background:#f3faf4;border:1px solid rgba(122,158,126,.35);color:#234;padding:8px 10px;border-radius:999px;font-size:13px;cursor:pointer;white-space:nowrap}
   .chip.is-selected{background:var(--accent);color:#fff;border-color:rgba(122,158,126,.85)}
 
-  /* Modal (picker + results) */
+  /* Modal (picker + results + steps) */
   .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1000}
   .modal.open{display:flex}
   .backdrop{position:absolute;inset:0;background:rgba(15,23,42,.32)}
@@ -117,11 +117,28 @@
   .badge{border:1px solid #d1fae5;background:#ecfdf5;border-radius:999px;font-size:11px;padding:4px 8px;color:#065f46}
   .missing{color:#9a3412;background:#fff7ed;border:1px solid #fed7aa;border-radius:999px;padding:3px 8px;font-size:11px}
   .recipe-actions{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(15,23,42,.06)}
-  .recipe-actions a{flex:1;text-align:center;text-decoration:none;border:1px solid rgba(15,23,42,.12);padding:8px;border-radius:10px;color:#0f172a;font-weight:600}
-  .recipe-actions a:hover{box-shadow:var(--shadow)}
+  .recipe-actions a,
+  .recipe-actions button{
+    flex:1;
+    text-align:center;
+    text-decoration:none;
+    border:1px solid rgba(15,23,42,.12);
+    padding:8px;
+    border-radius:10px;
+    font-weight:600;
+    cursor:pointer;
+    background:#fff;
+    color:#0f172a;
+  }
+  .recipe-actions a:hover,
+  .recipe-actions button:hover{box-shadow:var(--shadow)}
   .loading{display:flex;gap:10px;align-items:center;justify-content:center;padding:28px 6px;color:#64748b}
   .spinner{width:18px;height:18px;border:3px solid #e5e7eb;border-top-color:var(--accent);border-radius:999px;animation:sp 0.9s linear infinite}
   @keyframes sp{to{transform:rotate(1turn)}}
+
+  /* Steps list */
+  .steps-list{padding-left:20px;font-size:14px;color:#334155}
+  .steps-list li{margin-bottom:6px}
 
   /* Cart */
   .cart{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid rgba(15,23,42,.06);box-shadow:0 -10px 30px rgba(16,24,40,.08);padding:12px 0;z-index:50}
@@ -268,6 +285,22 @@
       </div>
 
       <div id="resultsBody" class="dialog-body"></div>
+    </div>
+  </div>
+
+  <!-- INSTRUCTIONS MODAL -->
+  <div id="stepsModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="backdrop" data-close-steps></div>
+    <div class="dialog" role="document" style="max-width:700px;">
+      <div class="dialog-header">
+        <div id="stepsTitle" class="dialog-title">Instructions</div>
+        <button class="xbtn" data-close-steps aria-label="Close">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M6 6l12 12M18 6L6 18" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div id="stepsBody" class="dialog-body"></div>
     </div>
   </div>
 
@@ -441,6 +474,11 @@ const maxMissing    = document.getElementById('maxMissing');
 const maxMissingVal = document.getElementById('maxMissingVal');
 const sortBy        = document.getElementById('sortBy');
 
+/* Steps modal */
+const stepsModal = document.getElementById('stepsModal');
+const stepsTitle = document.getElementById('stepsTitle');
+const stepsBody  = document.getElementById('stepsBody');
+
 /* ---------------- Nav ---------------- */
 burger?.addEventListener('click', ()=> {
   const open = navMenu.classList.toggle('open');
@@ -613,7 +651,30 @@ maxMissing.addEventListener('input', ()=>{ maxMissingVal.textContent=maxMissing.
 onlyFull.addEventListener('change', applyFiltersAndRender);
 sortBy.addEventListener('change', applyFiltersAndRender);
 
-/* ---------------- Ingredient normalization + SYNONYMS (UPDATED) ---------------- */
+/* ---------------- Steps Modal ---------------- */
+function openStepsModal(title, instructions){
+  stepsTitle.textContent = title || 'Instructions';
+  const lines = (instructions || '').split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  if(lines.length > 1){
+    stepsBody.innerHTML = `<ol class="steps-list">${lines.map(l=>`<li>${escapeHtml(l)}</li>`).join('')}</ol>`;
+  } else {
+    stepsBody.innerHTML = `<p>${escapeHtml(instructions || 'No instructions available.')}</p>`;
+  }
+  stepsModal.classList.add('open');
+  stepsModal.setAttribute('aria-hidden','false');
+}
+function closeStepsModal(){
+  stepsModal.classList.remove('open');
+  stepsModal.setAttribute('aria-hidden','true');
+}
+stepsModal.addEventListener('click', e => {
+  if(e.target.closest('[data-close-steps]')) closeStepsModal();
+});
+stepsModal.addEventListener('keydown', e => {
+  if(e.key === 'Escape') closeStepsModal();
+});
+
+/* ---------------- Ingredient normalization + SYNONYMS ---------------- */
 const SYNONYMS = new Map([
   ['ground beef','beef'],
   ['minced beef','beef'],
@@ -651,11 +712,19 @@ const SYNONYMS = new Map([
   ['fish sauce','fishsauce'],
   ['bagoong (shrimp paste)','shrimp paste'],
 ]);
+
 function norm(x){
   let s = x.toLowerCase().trim();
   s = s.replace(/\s+/g,' ');
   if(SYNONYMS.has(s)) s = SYNONYMS.get(s);
   return s;
+}
+
+/* Escape HTML for instructions text */
+function escapeHtml(str){
+  return (str || '').replace(/[&<>"']/g, ch => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[ch]));
 }
 
 /* ---------------- SuperCook-style matcher ---------------- */
@@ -716,6 +785,7 @@ function renderRecipeResults(list){
     const pct = Math.round(r.coverage*100);
     const full = (r.coverage===1 && r.missing===0);
     const missingStr = r.missingList?.slice(0,3).map(capitalize).join(', ') + (r.missingList && r.missingList.length>3?'…':'');
+    const hasSteps = !!(r.instructions && r.instructions.trim().length);
     return `
     <article class="recipe-card">
       <img class="recipe-thumb" src="${r.image || ''}" alt="" onerror="this.style.display='none'"/>
@@ -730,6 +800,7 @@ function renderRecipeResults(list){
         </div>
       </div>
       <div class="recipe-actions">
+        ${hasSteps ? `<button type="button" class="view-steps" data-rid="${r.id}">View Steps</button>` : ''}
         <a href="${r.url || '#'}" target="_blank" rel="noopener">Open</a>
       </div>
     </article>`;
@@ -737,6 +808,19 @@ function renderRecipeResults(list){
   resultsBody.innerHTML = '';
   resultsBody.appendChild(grid);
 }
+
+/* View Steps button handler (event delegation) */
+resultsBody.addEventListener('click', e => {
+  const btn = e.target.closest('.view-steps');
+  if(!btn) return;
+  const id = btn.dataset.rid;
+  const rec = latestResults.find(r => String(r.id) === String(id));
+  if(rec && rec.instructions){
+    openStepsModal(rec.title, rec.instructions);
+  } else {
+    openStepsModal(rec.title, 'No instructions available for this recipe.');
+  }
+});
 
 /* ---------------- Generate Recipes (Spoonacular call, with cuisine) ---------------- */
 generateBtn.addEventListener('click', async ()=>{
@@ -774,7 +858,7 @@ generateBtn.addEventListener('click', async ()=>{
     });
 
     if(!latestResults.length){
-      resultsBody.innerHTML = `<div class="loading">No recipes found yet. Try fewer ingredients, or just select a region like Philippines and try again.</div>`;
+      resultsBody.innerHTML = `<div class="loading">No recipes found yet. Try fewer ingredients, or just select a region and try again.</div>`;
       resultsStatus.textContent = '';
       return;
     }
@@ -793,3 +877,4 @@ renderCategories(); renderRegions(); renderCart();
 </script>
 </body>
 </html>
+
