@@ -116,6 +116,7 @@
   .recipe-meta{display:flex;gap:8px;align-items:center;color:#64748b;font-size:12px;flex-wrap:wrap}
   .badge{border:1px solid #d1fae5;background:#ecfdf5;border-radius:999px;font-size:11px;padding:4px 8px;color:#065f46}
   .missing{color:#9a3412;background:#fff7ed;border:1px solid #fed7aa;border-radius:999px;padding:3px 8px;font-size:11px}
+  .recipe-instructions{margin:8px 0 0;font-size:12.5px;color:#4b5563;line-height:1.5;max-height:5.5em;overflow:hidden}
   .recipe-actions{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(15,23,42,.06)}
   .recipe-actions a{flex:1;text-align:center;text-decoration:none;border:1px solid rgba(15,23,42,.12);padding:8px;border-radius:10px;color:#0f172a;font-weight:600}
   .recipe-actions a:hover{box-shadow:var(--shadow)}
@@ -613,7 +614,7 @@ maxMissing.addEventListener('input', ()=>{ maxMissingVal.textContent=maxMissing.
 onlyFull.addEventListener('change', applyFiltersAndRender);
 sortBy.addEventListener('change', applyFiltersAndRender);
 
-/* ---------------- Ingredient normalization + SYNONYMS (UPDATED) ---------------- */
+/* ---------------- Ingredient normalization + SYNONYMS ---------------- */
 const SYNONYMS = new Map([
   ['ground beef','beef'],
   ['minced beef','beef'],
@@ -728,9 +729,10 @@ function renderRecipeResults(list){
           }
           <span>${capitalize(r.cuisine || '')}${r.country ? ' • '+r.country : ''}${r.source ? ' • '+r.source : ''}</span>
         </div>
+        ${r.instructions ? `<p class="recipe-instructions">${r.instructions}</p>` : ''}
       </div>
       <div class="recipe-actions">
-        <a href="${r.url || '#'}" target="_blank" rel="noopener">Open</a>
+        <a href="${r.url || '#'}" target="_blank" rel="noopener">Open full recipe</a>
       </div>
     </article>`;
   }).join('');
@@ -774,7 +776,7 @@ generateBtn.addEventListener('click', async ()=>{
     });
 
     if(!latestResults.length){
-      resultsBody.innerHTML = `<div class="loading">No recipes found yet. Try fewer ingredients, or just select a region like Philippines and try again.</div>`;
+      resultsBody.innerHTML = `<div class="loading">No recipes found yet. Try fewer ingredients, or just select a region and try again.</div>`;
       resultsStatus.textContent = '';
       return;
     }
@@ -793,4 +795,3 @@ renderCategories(); renderRegions(); renderCart();
 </script>
 </body>
 </html>
-
