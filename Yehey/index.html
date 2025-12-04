@@ -16,9 +16,9 @@
   html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--text);font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
 
-  /* Top Nav (centered menu, social right) */
+  /* Top Nav */
   .topnav{position:sticky;top:0;z-index:80;background:rgba(249,245,236,.92);backdrop-filter:saturate(160%) blur(8px);border-bottom:1px solid rgba(15,23,42,.06)}
-  .nav-inner{max-width:1120px;margin:0 auto;padding:10px 20px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px}
+  .nav-inner{max-width:1120px;margin:0 auto;padding:10px 20px;display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:12px}
   .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
   .logo-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--ring)}
   .nav-links{display:flex;gap:24px;justify-content:center;align-items:center}
@@ -29,7 +29,7 @@
   .social svg{width:18px;height:18px}
   .hamburger{display:none;justify-self:end;border:1px solid rgba(15,23,42,.12);background:#fff;padding:8px 10px;border-radius:12px;cursor:pointer}
   @media (max-width:820px){
-    .nav-inner{grid-template-columns:auto 1fr auto auto}
+    .nav-inner{grid-template-columns:auto auto auto}
     .hamburger{display:inline-flex}
     .nav-links{display:none;position:absolute;left:0;right:0;top:56px;background:#fff;border-bottom:1px solid rgba(15,23,42,.08);padding:12px 20px;box-shadow:0 12px 25px rgba(16,24,40,.10)}
     .nav-links.open{display:flex;flex-direction:column;gap:8px}
@@ -39,7 +39,7 @@
   .title{font-size:clamp(28px,4.2vw,44px);font-weight:700;margin:4px 0 8px}
   .subtitle{color:var(--muted);margin:0 0 18px}
 
-  /* Search with embedded Add */
+  /* Search */
   .search-wrap{position:relative;margin-bottom:8px}
   .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;opacity:.65;pointer-events:none}
   .search{width:100%;padding:16px 112px 16px 44px;border-radius:24px;border:1.5px solid rgba(15,23,42,.08);background:#fff;box-shadow:var(--shadow);outline:none;font-size:15px}
@@ -47,6 +47,18 @@
   .add-inside{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:var(--accent);color:#fff;border:none;font-weight:700;border-radius:999px;padding:10px 18px;cursor:pointer;box-shadow:0 6px 14px rgba(122,158,126,.28)}
   .add-inside:hover{transform:translateY(-50%) scale(1.04)}
   .tip{font-size:12.5px;color:#6b7280;margin-top:6px}
+
+  /* Autocomplete */
+  .autocomplete-list{
+    position:absolute;left:0;right:0;top:100%;margin-top:6px;
+    background:#fff;border-radius:16px;border:1px solid rgba(15,23,42,.08);
+    box-shadow:0 14px 30px rgba(15,23,42,.18);max-height:220px;overflow:auto;
+    z-index:120;
+    display:none;
+  }
+  .autocomplete-item{padding:9px 14px;font-size:14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+  .autocomplete-item span{opacity:.7;font-size:12px}
+  .autocomplete-item:hover{background:#f1f5f9}
 
   /* Sections */
   .section{margin-top:28px}
@@ -56,7 +68,6 @@
   .view-all{color:#64748b;font-weight:500;text-decoration:none;border-radius:10px;padding:8px 10px}
   .view-all:hover{background:rgba(100,116,139,.08)}
 
-  /* Cards */
   .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:14px}
   @media (max-width:980px){.grid{grid-template-columns:repeat(3,1fr)}}
   @media (max-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
@@ -69,15 +80,14 @@
   .sel-badge{position:absolute;right:12px;top:12px;background:var(--accent);color:#fff;font-weight:700;font-size:12px;line-height:1;padding:6px 8px;border-radius:999px;box-shadow:var(--shadow)}
   .hidden{display:none!important}
 
-  /* Chips */
   .chips{display:flex;flex-wrap:wrap;gap:8px}
   .chip{background:#f3faf4;border:1px solid rgba(122,158,126,.35);color:#234;padding:8px 10px;border-radius:999px;font-size:13px;cursor:pointer;white-space:nowrap}
   .chip.is-selected{background:var(--accent);color:#fff;border-color:rgba(122,158,126,.85)}
 
-  /* Modal (picker + results) */
+  /* Modal base */
   .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1000}
   .modal.open{display:flex}
-  .backdrop{position:absolute;inset:0;background:rgba(15,23,42,.32)}
+  .backdrop{position:absolute;inset:0;background:rgba(15,23,42,.35)}
   .dialog{
     position:relative;background:#fff;border-radius:24px;
     box-shadow:0 24px 60px rgba(0,0,0,.22), var(--shadow);
@@ -85,6 +95,7 @@
     max-width:960px;width:min(94vw,960px);max-height:86vh;
     padding:22px;display:flex;flex-direction:column;gap:6px
   }
+  .dialog.small{max-width:420px}
   .dialog-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
   .dialog-title{font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px}
   .xbtn{all:unset;cursor:pointer;border-radius:12px;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
@@ -99,23 +110,23 @@
   }
   .btn-primary:hover{filter:brightness(.98)}
 
-  /* Results grid */
+  /* Results toolbar & grid */
   .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
-  .toolbar .seg{display:flex;gap:6px;align-items:center;color:#475569;font-size:13px}
-  .recipes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-  @media (max-width:980px){ .recipes{grid-template-columns:repeat(2,1fr)} }
-  @media (max-width:640px){ .recipes{grid-template-columns:1fr} }
+  .toolbar .seg{display:flex;gap:8px;align-items:center;color:#475569;font-size:13px;flex-wrap:wrap}
+  .toolbar label{font-size:12px;display:flex;align-items:center;gap:3px}
 
-  .recipe-card{
-    display:flex;flex-direction:column;overflow:hidden;border-radius:16px;
-    border:1px solid rgba(15,23,42,.06);background:#fff;box-shadow:var(--shadow);
-  }
+  .recipes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media (max-width:980px){.recipes{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:640px){.recipes{grid-template-columns:1fr}}
+
+  .recipe-card{display:flex;flex-direction:column;overflow:hidden;border-radius:16px;border:1px solid rgba(15,23,42,.06);background:#fff;box-shadow:var(--shadow)}
   .recipe-thumb{aspect-ratio:16/9;object-fit:cover;background:#f1f5f9}
   .recipe-body{padding:12px}
   .recipe-title{font-weight:700;margin:0 0 6px;font-size:16px;line-height:1.3}
   .recipe-meta{display:flex;gap:8px;align-items:center;color:#64748b;font-size:12px;flex-wrap:wrap}
   .badge{border:1px solid #d1fae5;background:#ecfdf5;border-radius:999px;font-size:11px;padding:4px 8px;color:#065f46}
   .missing{color:#9a3412;background:#fff7ed;border:1px solid #fed7aa;border-radius:999px;padding:3px 8px;font-size:11px}
+  .subs-link{border:none;background:none;color:#0f766e;font-size:11px;cursor:pointer;text-decoration:underline;padding:0}
   .recipe-actions{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(15,23,42,.06)}
   .recipe-actions a{flex:1;text-align:center;text-decoration:none;border:1px solid rgba(15,23,42,.12);padding:8px;border-radius:10px;color:#0f172a;font-weight:600}
   .recipe-actions a:hover{box-shadow:var(--shadow)}
@@ -128,12 +139,13 @@
   .cart-inner{max-width:1120px;margin:0 auto;padding:8px 20px;display:flex;gap:12px;align-items:center}
   .cart-title{color:#6b7280;font-size:14px;white-space:nowrap}
   .cart-tags{display:flex;gap:8px;align-items:center;flex-wrap:wrap;max-height:80px;overflow:auto;padding-right:8px}
-  .itag{display:inline-flex;align-items:center;gap:6px;background:#edf7ee;border:1px solid rgba(122,158,126,.45);border-radius:999px;padding:8px 10px;font-size:13px}
+  .itag{display:inline-flex;align-items:center;gap:6px;background:#edf7ee;border:1px solid rgba(122,158,126,.45);border-radius:999px;padding:6px 9px;font-size:13px}
   .itag.country{background:#eef6ff;border-color:#cfe7ff}
-  .itag button{all:unset;cursor:pointer;padding:4px 8px;border-radius:8px;line-height:1}
+  .itag button{all:unset;cursor:pointer;padding:3px 6px;border-radius:8px;line-height:1}
   .itag button:hover{background:rgba(15,23,42,.08)}
+  .itag-info{font-size:11px;color:#0f766e}
   .spacer{flex:1}
-  .btn{border:1.5px solid rgba(15,23,42,.12);background:#fff;padding:10px 14px;border-radius:12px;font-weight:600;cursor:pointer}
+  .btn{border:1.5px solid rgba(15,23,42,.12);background:#fff;padding:10px 14px;border-radius:12px;font-weight:600;cursor:pointer;font-size:13px}
   .btn:hover{box-shadow:var(--shadow)}
   .btn-ghost{border-color:#cbd5e1;color:#475569}
   .btn-outline{border-color:var(--accent);color:var(--accent);background:linear-gradient(180deg,#f7fff9,#ffffff)}
@@ -173,11 +185,12 @@
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15Zm0 0 7 7" stroke="#64748b" stroke-width="1.8" stroke-linecap="round"/></svg>
         <input id="ingredientInput" class="search" type="text" placeholder="e.g., chicken, onion, garlic" aria-label="Add ingredients" />
         <button id="addInside" class="add-inside" type="button">Add</button>
+        <div id="autocompleteList" class="autocomplete-list"></div>
       </div>
       <div class="tip">Tip: separate with commas. Press Enter to add quickly.</div>
     </header>
 
-    <!-- Ingredient Categories -->
+    <!-- Categories -->
     <section class="section" aria-labelledby="cat-title">
       <div class="section-head">
         <div>
@@ -189,7 +202,7 @@
       <div id="categoryGrid" class="grid"></div>
     </section>
 
-    <!-- Regions -->
+    <!-- Regions / Countries -->
     <section class="section" aria-labelledby="region-title">
       <div class="section-head">
         <div>
@@ -204,7 +217,7 @@
     <div class="footer">© 2025 TaDa! I Can Cook — crafted with ❤️</div>
   </div>
 
-  <!-- Bottom cart -->
+  <!-- Cart -->
   <div class="cart" role="region" aria-label="Ingredient and cuisine cart">
     <div class="cart-inner">
       <div id="cartTitle" class="cart-title">Add ingredients or pick at least one category/cuisine.</div>
@@ -216,10 +229,10 @@
     </div>
   </div>
 
-  <!-- PICKER MODAL (ingredients/countries) -->
+  <!-- Picker Modal -->
   <div id="pickerModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="backdrop" data-dismiss></div>
-    <div class="dialog" role="document" aria-labelledby="pickerTitle" style="max-width:640px;">
+    <div class="dialog" role="document" aria-labelledby="pickerTitle">
       <div class="dialog-header">
         <div id="pickerTitle" class="dialog-title"></div>
         <button class="xbtn" data-dismiss aria-label="Close">
@@ -236,7 +249,7 @@
     </div>
   </div>
 
-  <!-- RESULTS MODAL -->
+  <!-- Results Modal -->
   <div id="resultsModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="backdrop" data-close-results></div>
     <div class="dialog" role="document">
@@ -264,6 +277,16 @@
             <option value="coverage">Most coverage</option>
           </select>
         </div>
+        <div class="seg">
+          <span>Diet:</span>
+          <label><input type="checkbox" id="diet-vegetarian"> Vegetarian</label>
+          <label><input type="checkbox" id="diet-vegan"> Vegan</label>
+        </div>
+        <div class="seg">
+          <span>Allergies:</span>
+          <label><input type="checkbox" id="int-gluten"> Gluten-free</label>
+          <label><input type="checkbox" id="int-dairy"> Dairy-free</label>
+        </div>
         <div class="seg" id="resultsStatus"></div>
       </div>
 
@@ -271,101 +294,77 @@
     </div>
   </div>
 
+  <!-- Ingredient Info Modal -->
+  <div id="infoModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="backdrop" data-close-info></div>
+    <div class="dialog small" role="document">
+      <div class="dialog-header">
+        <div class="dialog-title" id="infoTitle">Ingredient info</div>
+        <button class="xbtn" data-close-info aria-label="Close">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M6 6l12 12M18 6L6 18" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="dialog-body" id="infoBody">
+        <!-- filled via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Substitutes Modal -->
+  <div id="subsModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="backdrop" data-close-subs></div>
+    <div class="dialog small" role="document">
+      <div class="dialog-header">
+        <div class="dialog-title">Ingredient substitutes</div>
+        <button class="xbtn" data-close-subs aria-label="Close">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M6 6l12 12M18 6L6 18" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="dialog-body">
+        <p id="subsName" style="font-weight:600;margin-top:0"></p>
+        <ul id="subsList" style="padding-left:18px;margin-top:6px;"></ul>
+      </div>
+    </div>
+  </div>
+
 <script>
-/* ---------------- Data ---------------- */
+/* ---------- Data ---------- */
 const CATEGORY_DATA = [
   {
-    key:'meats',
-    label:'Meats',
-    icon:'🍖',
-    items:[
-      'chicken breast','chicken thigh','whole chicken',
-      'pork','pork belly','ground pork',
-      'beef','ground beef','beef steak',
-      'bacon','ham','sausage','hotdog',
-      'lamb','chorizo'
-    ]
+    key:'meats',label:'Meats',icon:'🍖',
+    items:['chicken','chicken breast','chicken thigh','whole chicken','pork','pork belly','ground pork','beef','ground beef','beef steak','bacon','ham','sausage','hotdog','lamb','chorizo']
   },
   {
-    key:'seafood',
-    label:'Seafood',
-    icon:'🍤',
-    items:[
-      'shrimp','tuna','salmon','tilapia','bangus (milkfish)',
-      'crab','squid','octopus','mussels','clams',
-      'sardines (canned)','anchovies','fish fillet'
-    ]
+    key:'seafood',label:'Seafood',icon:'🍤',
+    items:['shrimp','tuna','salmon','tilapia','bangus (milkfish)','crab','squid','octopus','mussels','clams','sardines','anchovies','fish fillet']
   },
   {
-    key:'grains',
-    label:'Grains & Pasta',
-    icon:'🍙',
-    items:[
-      'white rice','brown rice','jasmine rice',
-      'pasta','spaghetti','macaroni',
-      'noodles','instant noodles','rice noodles',
-      'quinoa','oats','bread crumbs',
-      'flour','cornstarch','tortilla wraps'
-    ]
+    key:'grains',label:'Grains & Pasta',icon:'🍙',
+    items:['white rice','brown rice','jasmine rice','pasta','spaghetti','macaroni','noodles','instant noodles','rice noodles','quinoa','oats','bread crumbs','flour','cornstarch','tortilla wraps']
   },
   {
-    key:'veggies',
-    label:'Vegetables',
-    icon:'🥦',
-    items:[
-      'tomato','onion','red onion','garlic','ginger',
-      'carrot','potato','sweet potato',
-      'eggplant','okra','ampalaya (bitter gourd)',
-      'cabbage','pechay','spinach','lettuce',
-      'bell pepper','chili pepper','green beans',
-      'broccoli','cauliflower'
-    ]
+    key:'veggies',label:'Vegetables',icon:'🥦',
+    items:['tomato','onion','red onion','garlic','ginger','carrot','potato','sweet potato','eggplant','okra','ampalaya (bitter gourd)','cabbage','pechay','spinach','lettuce','bell pepper','chili pepper','green beans','broccoli','cauliflower']
   },
   {
-    key:'fruits',
-    label:'Fruits',
-    icon:'🍌',
-    items:[
-      'banana','apple','mango','pineapple',
-      'orange','lemon','lime','calamansi',
-      'grapes','strawberry','avocado',
-      'watermelon','papaya'
-    ]
+    key:'fruits',label:'Fruits',icon:'🍌',
+    items:['banana','apple','mango','pineapple','orange','lemon','lime','calamansi','grapes','strawberry','avocado','watermelon','papaya']
   },
   {
-    key:'dairy',
-    label:'Dairy & Eggs',
-    icon:'🥛',
-    items:[
-      'egg','egg yolk','egg white',
-      'milk','evaporated milk','condensed milk',
-      'butter','margarine','cheese','cream cheese',
-      'parmesan','yogurt','all-purpose cream'
-    ]
+    key:'dairy',label:'Dairy & Eggs',icon:'🥛',
+    items:['egg','egg yolk','egg white','milk','evaporated milk','condensed milk','butter','margarine','cheese','cream cheese','parmesan','yogurt','all-purpose cream']
   },
   {
-    key:'bread',
-    label:'Bread',
-    icon:'🥖',
-    items:[
-      'loaf bread','whole wheat bread','pandesal',
-      'baguette','burger buns','hotdog buns',
-      'pita','tortilla','flatbread'
-    ]
+    key:'bread',label:'Bread',icon:'🥖',
+    items:['loaf bread','whole wheat bread','pandesal','baguette','burger buns','hotdog buns','pita','tortilla','flatbread']
   },
   {
-    key:'condiments',
-    label:'Condiments',
-    icon:'🧂',
-    items:[
-      'salt','black pepper','sugar','brown sugar','honey',
-      'soy sauce','vinegar','cane vinegar',
-      'fish sauce','oyster sauce','banana ketchup',
-      'ketchup','mayonnaise','mustard',
-      'olive oil','vegetable oil','sesame oil',
-      'chili sauce','sriracha','hoisin sauce',
-      'gochujang','bagoong (shrimp paste)'
-    ]
+    key:'condiments',label:'Condiments',icon:'🧂',
+    items:['salt','black pepper','sugar','brown sugar','honey','soy sauce','vinegar','cane vinegar','fish sauce','oyster sauce','banana ketchup','ketchup','mayonnaise','mustard','olive oil','vegetable oil','sesame oil','chili sauce','sriracha','hoisin sauce','gochujang','bagoong (shrimp paste)']
   }
 ];
 
@@ -380,7 +379,6 @@ const REGION_DATA = [
   { key:'caribbean',     label:'Caribbean',     icon:'🏝️', countries:['Puerto Rico','Dominican Republic','Trinidad & Tobago','Haiti','Barbados','Bahamas','Cuba','Jamaica'] },
 ];
 
-/* Map country → Spoonacular cuisine slug */
 const COUNTRY_TO_CUISINE = {
   'Philippines':'filipino',
   'Japan':'japanese',
@@ -408,11 +406,11 @@ const COUNTRY_TO_CUISINE = {
   'Australia':'australian'
 };
 
-/* ---------------- State ---------------- */
+/* ---------- State ---------- */
 const state = { ingredients:new Set(), countries:new Set() };
-let latestResults = []; // last API results with scores
+let latestResults = [];
 
-/* ---------------- DOM ---------------- */
+/* ---------- DOM ---------- */
 const categoryGrid = document.getElementById('categoryGrid');
 const regionGrid   = document.getElementById('regionGrid');
 const cartTags     = document.getElementById('cartTags');
@@ -424,6 +422,7 @@ const surpriseBtn  = document.getElementById('surpriseBtn');
 const generateBtn  = document.getElementById('generateBtn');
 const burger       = document.getElementById('burger');
 const navMenu      = document.getElementById('navMenu');
+const autocompleteList = document.getElementById('autocompleteList');
 
 /* Picker modal */
 const modal      = document.getElementById('pickerModal');
@@ -441,13 +440,29 @@ const maxMissing    = document.getElementById('maxMissing');
 const maxMissingVal = document.getElementById('maxMissingVal');
 const sortBy        = document.getElementById('sortBy');
 
-/* ---------------- Nav ---------------- */
+/* Diet / allergy */
+const dietVeg   = document.getElementById('diet-vegetarian');
+const dietVegan = document.getElementById('diet-vegan');
+const intGluten = document.getElementById('int-gluten');
+const intDairy  = document.getElementById('int-dairy');
+
+/* Info & subs modals */
+const infoModal = document.getElementById('infoModal');
+const infoBody  = document.getElementById('infoBody');
+const subsModal = document.getElementById('subsModal');
+const subsName  = document.getElementById('subsName');
+const subsList  = document.getElementById('subsList');
+
+/* ---------- Helpers ---------- */
+function capitalize(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : ''; }
+
+/* Nav burger */
 burger?.addEventListener('click', ()=> {
   const open = navMenu.classList.toggle('open');
   burger.setAttribute('aria-expanded', String(open));
 });
 
-/* ---------------- Render Category Cards ---------------- */
+/* ---------- Render Categories ---------- */
 function renderCategories(){
   categoryGrid.innerHTML='';
   CATEGORY_DATA.forEach(cat=>{
@@ -470,7 +485,7 @@ function renderCategories(){
   updateCategoryCounts();
 }
 
-/* ---------------- Render Region Cards ---------------- */
+/* ---------- Render Regions ---------- */
 function renderRegions(){
   regionGrid.innerHTML='';
   REGION_DATA.forEach(r=>{
@@ -493,7 +508,7 @@ function renderRegions(){
   updateRegionCounts();
 }
 
-/* ---------------- Modal Picker ---------------- */
+/* ---------- Picker Modal ---------- */
 let lastFocusEl = null, tempSet=null;
 function openPicker(cfg, anchorEl){
   lastFocusEl = anchorEl || document.activeElement;
@@ -527,7 +542,7 @@ function closeModal(){ modal.classList.remove('open'); modal.setAttribute('aria-
 modal.addEventListener('click',(e)=>{ if(e.target.closest('[data-dismiss]')) closeModal(); });
 modal.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closeModal(); });
 
-/* ---------------- Cart & Counts ---------------- */
+/* ---------- Cart & Counts ---------- */
 function renderCart(){
   cartTags.innerHTML='';
   const ings=[...state.ingredients], cts=[...state.countries];
@@ -535,7 +550,10 @@ function renderCart(){
   ings.forEach(i=>{
     const tag=document.createElement('span');
     tag.className='itag';
-    tag.innerHTML=`${capitalize(i)} <button aria-label="Remove ${i}" data-x="${i}" data-xtype="ing">✕</button>`;
+    tag.innerHTML=`
+      ${capitalize(i)}
+      <button type="button" class="itag-info" data-info="${i}">ℹ</button>
+      <button aria-label="Remove ${i}" data-x="${i}" data-xtype="ing">✕</button>`;
     cartTags.appendChild(tag);
   });
   cts.forEach(c=>{
@@ -547,6 +565,12 @@ function renderCart(){
   updateCategoryCounts(); updateRegionCounts();
 }
 cartTags.addEventListener('click',(e)=>{
+  const info = e.target.closest('button.itag-info');
+  if(info){
+    const name = info.dataset.info;
+    if(name) showIngredientInfo(name);
+    return;
+  }
   const btn=e.target.closest('button[data-x]'); if(!btn) return;
   if(btn.dataset.xtype==='ctr'){ state.countries.delete(btn.dataset.x); }
   else { state.ingredients.delete(btn.dataset.x.toLowerCase()); }
@@ -567,12 +591,11 @@ function updateRegionCounts(){
   });
 }
 
-/* ---------------- Input & Buttons ---------------- */
-function capitalize(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : ''; }
+/* ---------- Input, Add, Clear, Surprise ---------- */
 function commitInput(){
   const parts=input.value.split(',').map(s=>s.trim()).filter(Boolean);
   parts.forEach(p=>state.ingredients.add(p.toLowerCase()));
-  input.value=''; renderCart();
+  input.value=''; autocompleteList.style.display='none'; renderCart();
 }
 addInside.addEventListener('click', commitInput);
 input.addEventListener('keydown',(e)=>{ if(e.key==='Enter'){ e.preventDefault(); commitInput(); }});
@@ -582,6 +605,7 @@ input.addEventListener('input',()=>{
     arr.map(s=>s.trim()).filter(Boolean).forEach(p=>state.ingredients.add(p.toLowerCase()));
     input.value=last.trim(); renderCart();
   }
+  handleAutocomplete();
 });
 clearBtn.addEventListener('click',()=>{
   state.ingredients.clear();
@@ -604,7 +628,46 @@ surpriseBtn.addEventListener('click',()=>{
   renderCart();
 });
 
-/* ---------------- Results Modal controls ---------------- */
+/* ---------- Autocomplete (goes via backend) ---------- */
+let autoTimer;
+async function handleAutocomplete(){
+  const q = input.value.trim();
+  if(q.length < 2){ autocompleteList.style.display='none'; return; }
+  clearTimeout(autoTimer);
+  autoTimer = setTimeout(async ()=>{
+    try{
+      const res = await fetch(`/api/recipes?mode=autocomplete&query=${encodeURIComponent(q)}`);
+      if(!res.ok){ autocompleteList.style.display='none'; return; }
+      const data = await res.json();
+      if(!Array.isArray(data) || !data.length){ autocompleteList.style.display='none'; return; }
+      autocompleteList.innerHTML = data.map(item=>`
+        <div class="autocomplete-item" data-name="${item.name}">
+          <span>${item.name}</span>
+          ${item.aisle ? `<span>${item.aisle}</span>`:''}
+        </div>
+      `).join('');
+      autocompleteList.style.display='block';
+    } catch(e){
+      console.error(e);
+      autocompleteList.style.display='none';
+    }
+  }, 220);
+}
+autocompleteList.addEventListener('click',(e)=>{
+  const row = e.target.closest('.autocomplete-item');
+  if(!row) return;
+  const name = row.dataset.name;
+  if(name){
+    state.ingredients.add(name.toLowerCase());
+    renderCart();
+  }
+  input.value=''; autocompleteList.style.display='none';
+});
+document.addEventListener('click',(e)=>{
+  if(!e.target.closest('.search-wrap')) autocompleteList.style.display='none';
+});
+
+/* ---------- Results Modal controls ---------- */
 function openResults(){ resultsModal.classList.add('open'); resultsModal.setAttribute('aria-hidden','false'); }
 function closeResults(){ resultsModal.classList.remove('open'); resultsModal.setAttribute('aria-hidden','true'); }
 resultsModal.addEventListener('click',(e)=>{ if(e.target.closest('[data-close-results]')) closeResults(); });
@@ -613,7 +676,7 @@ maxMissing.addEventListener('input', ()=>{ maxMissingVal.textContent=maxMissing.
 onlyFull.addEventListener('change', applyFiltersAndRender);
 sortBy.addEventListener('change', applyFiltersAndRender);
 
-/* ---------------- Ingredient normalization + SYNONYMS (UPDATED) ---------------- */
+/* ---------- Ingredient normalization + synonyms ---------- */
 const SYNONYMS = new Map([
   ['ground beef','beef'],
   ['minced beef','beef'],
@@ -658,7 +721,7 @@ function norm(x){
   return s;
 }
 
-/* ---------------- SuperCook-style matcher ---------------- */
+/* ---------- Scoring ---------- */
 function scoreRecipe(recipe, inputSet, chosenCountries){
   const recSet = new Set((recipe.ingredients || []).map(norm));
   let matched=0;
@@ -682,7 +745,7 @@ function scoreRecipe(recipe, inputSet, chosenCountries){
   return {score, coverage, missing, matchedList, missingList};
 }
 
-/* Apply filters on latestResults and render */
+/* ---------- Filter & render results ---------- */
 function applyFiltersAndRender(){
   if(!latestResults.length){
     resultsBody.innerHTML = `<div class="loading">No results yet. Add ingredients and tap Generate Recipes.</div>`;
@@ -702,8 +765,6 @@ function applyFiltersAndRender(){
 
   renderRecipeResults(list);
 }
-
-/* Render recipe cards */
 function renderRecipeResults(list){
   resultsStatus.textContent = `${list.length} result${list.length!==1?'s':''}`;
   if(!list.length){
@@ -716,6 +777,7 @@ function renderRecipeResults(list){
     const pct = Math.round(r.coverage*100);
     const full = (r.coverage===1 && r.missing===0);
     const missingStr = r.missingList?.slice(0,3).map(capitalize).join(', ') + (r.missingList && r.missingList.length>3?'…':'');
+    const firstMissing = r.missingList && r.missingList[0];
     return `
     <article class="recipe-card">
       <img class="recipe-thumb" src="${r.image || ''}" alt="" onerror="this.style.display='none'"/>
@@ -726,6 +788,7 @@ function renderRecipeResults(list){
           ${full ? `<span class="badge">✅ Uses all you have</span>` :
             (typeof r.missing==='number' ? `<span class="missing">+${r.missing} needed${r.missing?': '+(missingStr||'') : ''}</span>` : '')
           }
+          ${firstMissing ? `<button class="subs-link" type="button" data-subs="${firstMissing}">Need a substitute?</button>`:''}
           <span>${capitalize(r.cuisine || '')}${r.country ? ' • '+r.country : ''}${r.source ? ' • '+r.source : ''}</span>
         </div>
       </div>
@@ -738,7 +801,15 @@ function renderRecipeResults(list){
   resultsBody.appendChild(grid);
 }
 
-/* ---------------- Generate Recipes (Spoonacular call, with cuisine) ---------------- */
+/* Subs click (event delegation) */
+resultsBody.addEventListener('click',(e)=>{
+  const btn = e.target.closest('.subs-link');
+  if(!btn) return;
+  const name = btn.dataset.subs;
+  if(name) showSubstitutes(name);
+});
+
+/* ---------- Generate Recipes (with diet + intolerances) ---------- */
 generateBtn.addEventListener('click', async ()=>{
   const ingredients = [...state.ingredients];
   const countries   = [...state.countries];
@@ -760,8 +831,21 @@ generateBtn.addEventListener('click', async ()=>{
   const cuisineParam = cuisines.join(',');
   const ingredientsQuery = ingredients.join(', ');
 
+  const diet = [];
+  if(dietVeg.checked) diet.push('vegetarian');
+  if(dietVegan.checked) diet.push('vegan');
+  const intolerances = [];
+  if(intGluten.checked) intolerances.push('gluten');
+  if(intDairy.checked)  intolerances.push('dairy');
+
+  const qs = new URLSearchParams();
+  if(ingredientsQuery) qs.set('q', ingredientsQuery);
+  if(cuisineParam) qs.set('cuisine', cuisineParam);
+  if(diet.length) qs.set('diet', diet.join(','));
+  if(intolerances.length) qs.set('intolerances', intolerances.join(','));
+
   try{
-    const url = `/api/recipes?q=${encodeURIComponent(ingredientsQuery)}&cuisine=${encodeURIComponent(cuisineParam)}`;
+    const url = `/api/recipes?${qs.toString()}`;
     const res = await fetch(url);
     if(!res.ok) throw new Error('Search failed');
     const data = await res.json();
@@ -788,7 +872,65 @@ generateBtn.addEventListener('click', async ()=>{
   }
 });
 
-/* ---------------- Boot ---------------- */
+/* ---------- Ingredient Info (via backend) ---------- */
+async function showIngredientInfo(name){
+  try{
+    infoBody.innerHTML = `<div class="loading"><span class="spinner"></span><span>Loading ${capitalize(name)}…</span></div>`;
+    infoModal.classList.add('open'); infoModal.setAttribute('aria-hidden','false');
+    const res = await fetch(`/api/recipes?mode=info&name=${encodeURIComponent(name)}`);
+    if(!res.ok){
+      infoBody.innerHTML = `<p>Sorry, no extra information found for <strong>${capitalize(name)}</strong>.</p>`;
+      return;
+    }
+    const data = await res.json();
+    const kcal = data.calories ? `${Math.round(data.calories)} kcal (per 100g)` : 'N/A';
+    const aisle = data.aisle || 'Unknown';
+    const img = data.image ? `<img src="${data.image}" alt="" style="max-width:120px;border-radius:16px;margin-bottom:10px;">` : '';
+    const uses = (data.possibleUnits || []).map(u=>`<li>${u}</li>`).join('') || '<li>No extra usage info.</li>';
+
+    infoBody.innerHTML = `
+      <div style="text-align:center;">
+        ${img}
+        <h3 style="margin:4px 0 6px;">${capitalize(data.name || name)}</h3>
+        <p style="font-size:13px;margin:0 0 8px;"><strong>Calories:</strong> ${kcal}</p>
+        <p style="font-size:13px;margin:0 0 8px;"><strong>Aisle:</strong> ${aisle}</p>
+        <p style="font-size:13px;margin:6px 0 4px;"><strong>Units you may see:</strong></p>
+        <ul style="text-align:left;font-size:13px;margin-top:4px;">${uses}</ul>
+      </div>`;
+  } catch(e){
+    console.error(e);
+    infoBody.innerHTML = `<p>Something went wrong while loading ingredient info.</p>`;
+  }
+}
+infoModal.addEventListener('click',(e)=>{ if(e.target.closest('[data-close-info]')){ infoModal.classList.remove('open'); infoModal.setAttribute('aria-hidden','true'); }});
+infoModal.addEventListener('keydown',(e)=>{ if(e.key==='Escape'){ infoModal.classList.remove('open'); infoModal.setAttribute('aria-hidden','true'); }});
+
+/* ---------- Substitutes (via backend) ---------- */
+async function showSubstitutes(name){
+  try{
+    subsName.textContent = capitalize(name);
+    subsList.innerHTML = `<li>Loading suggestions…</li>`;
+    subsModal.classList.add('open'); subsModal.setAttribute('aria-hidden','false');
+    const res = await fetch(`/api/recipes?mode=subs&name=${encodeURIComponent(name)}`);
+    if(!res.ok){
+      subsList.innerHTML = `<li>No substitution information found.</li>`;
+      return;
+    }
+    const data = await res.json();
+    if(Array.isArray(data.substitutes) && data.substitutes.length){
+      subsList.innerHTML = data.substitutes.map(s=>`<li>${s}</li>`).join('');
+    } else {
+      subsList.innerHTML = `<li>No known good substitutes for this ingredient.</li>`;
+    }
+  } catch(e){
+    console.error(e);
+    subsList.innerHTML = `<li>Error fetching substitutions.</li>`;
+  }
+}
+subsModal.addEventListener('click',(e)=>{ if(e.target.closest('[data-close-subs]')){ subsModal.classList.remove('open'); subsModal.setAttribute('aria-hidden','true'); }});
+subsModal.addEventListener('keydown',(e)=>{ if(e.key==='Escape'){ subsModal.classList.remove('open'); subsModal.setAttribute('aria-hidden','true'); }});
+
+/* ---------- Boot ---------- */
 renderCategories(); renderRegions(); renderCart();
 </script>
 </body>
