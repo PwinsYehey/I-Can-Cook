@@ -1,8 +1,10 @@
 // /api/recipes.js
+// Vercel serverless function to proxy Spoonacular safely
+
 export default async function handler(req, res) {
   try {
     const q = (req.query.q || '').toString().slice(0, 300);
-    const key = process.env.SPOONACULAR_KEY;
+    const key = process.env.SPOONACULAR_KEY; // make sure this is set in Vercel
 
     if (!key) {
       return res.status(500).json({ error: 'Missing SPOONACULAR_KEY env var' });
@@ -14,7 +16,7 @@ export default async function handler(req, res) {
     const url = new URL('https://api.spoonacular.com/recipes/complexSearch');
     url.searchParams.set('apiKey', key);
     url.searchParams.set('query', q);
-    url.searchParams.set('number', '12');
+    url.searchParams.set('number', '12');              // how many recipes to return
     url.searchParams.set('addRecipeInformation', 'true');
     url.searchParams.set('fillIngredients', 'true');
 
@@ -31,10 +33,10 @@ export default async function handler(req, res) {
       const ingredients =
         (item.extendedIngredients || []).map(i => (i.name || '').toLowerCase());
 
-      // 👉 Prefer the ORIGINAL recipe site, then fall back to Spoonacular
+      // Prefer Spoonacular's own URL (more stable), fall back to original site
       const primaryUrl =
-        item.sourceUrl ||      // original blog / website (usually has full instructions)
         item.spoonacularSourceUrl ||
+        item.sourceUrl ||
         '';
 
       return {
