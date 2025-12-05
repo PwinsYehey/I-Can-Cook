@@ -48,52 +48,6 @@
   .add-inside:hover{transform:translateY(-50%) scale(1.04)}
   .tip{font-size:12.5px;color:#6b7280;margin-top:6px}
 
-  /* ---------- HERO ILLUSTRATION UPGRADE ---------- */
-  .hero {
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-top:20px;
-    gap:30px;
-    position:relative;
-    padding-bottom:20px;
-  }
-  .hero-left{flex:1;}
-  .hero-illustration{
-    flex:1;
-    position:relative;
-    display:flex;
-    justify-content:center;
-  }
-  .mascot{
-    width:260px;
-    height:auto;
-    filter:drop-shadow(0 10px 30px rgba(0,0,0,0.10));
-    animation:floatUpDown 3s ease-in-out infinite;
-  }
-  .float-1,.float-2,.float-3,.float-4{
-    position:absolute;
-    font-size:32px;
-    opacity:0.9;
-    animation:float 4.5s ease-in-out infinite;
-  }
-  .float-1{top:-10px;left:30px;animation-delay:0s;}
-  .float-2{top:40px;right:20px;animation-delay:.8s;}
-  .float-3{bottom:10px;left:60px;animation-delay:1.6s;}
-  .float-4{bottom:40px;right:70px;animation-delay:2.2s;}
-  @keyframes float{
-    0%,100%{transform:translateY(0);opacity:.9;}
-    50%{transform:translateY(-12px);opacity:1;}
-  }
-  @keyframes floatUpDown{
-    0%,100%{transform:translateY(0);}
-    50%{transform:translateY(-6px);}
-  }
-  @media (max-width:900px){
-    .hero{flex-direction:column;text-align:center;}
-    .hero-illustration{margin-top:20px;}
-  }
-
   /* Sections */
   .section{margin-top:28px}
   .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
@@ -229,43 +183,15 @@
   </nav>
 
   <div class="container">
-    <!-- Hero with mascot -->
     <header class="hero" aria-labelledby="page-title">
-      <div class="hero-left">
-        <h1 id="page-title" class="title">Find ideas from what you have</h1>
-        <p class="subtitle">Type your ingredients, then pick cuisines or categories. We’ll suggest recipes that match your pantry.</p>
-
-        <div class="search-wrap" role="search">
-          <svg class="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15Zm0 0 7 7" stroke="#64748b" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-          <input id="ingredientInput" class="search" type="text" placeholder="e.g., chicken, onion, garlic" aria-label="Add ingredients" />
-          <button id="addInside" class="add-inside" type="button">Add</button>
-        </div>
-        <div class="tip">Tip: separate with commas. Press Enter to add quickly.</div>
+      <h1 id="page-title" class="title">Find ideas from what you have</h1>
+      <p class="subtitle">Type your ingredients, then pick cuisines or categories. We’ll suggest recipes that match your pantry.</p>
+      <div class="search-wrap" role="search">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15Zm0 0 7 7" stroke="#64748b" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <input id="ingredientInput" class="search" type="text" placeholder="e.g., chicken, onion, garlic" aria-label="Add ingredients" />
+        <button id="addInside" class="add-inside" type="button">Add</button>
       </div>
-
-      <div class="hero-illustration">
-        <!-- Cute cooking pot illustration -->
-        <svg class="mascot" viewBox="0 0 200 200">
-          <ellipse cx="100" cy="170" rx="55" ry="12" fill="#e2e8f0"/>
-          <rect x="45" y="70" width="110" height="70" rx="18" fill="#7A9E7E"/>
-          <rect x="55" y="65" width="90" height="12" rx="6" fill="#94b89a"/>
-          <circle cx="80" cy="105" r="9" fill="#fff"/>
-          <circle cx="120" cy="105" r="9" fill="#fff"/>
-          <circle cx="80" cy="105" r="5" fill="#7a9e7e"/>
-          <circle cx="120" cy="105" r="5" fill="#7a9e7e"/>
-          <path d="M75 125 Q100 145 125 125" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>
-          <path d="M30 80 Q50 60 70 80" stroke="#7a9e7e" stroke-width="8" fill="none" stroke-linecap="round"/>
-          <path d="M130 80 Q150 60 170 80" stroke="#7a9e7e" stroke-width="8" fill="none" stroke-linecap="round"/>
-        </svg>
-
-        <!-- Floating decorative elements -->
-        <div class="float-1">🍅</div>
-        <div class="float-2">🥕</div>
-        <div class="float-3">🍳</div>
-        <div class="float-4">🧄</div>
-      </div>
+      <div class="tip">Tip: separate with commas. Press Enter to add quickly.</div>
     </header>
 
     <!-- Ingredient Categories -->
@@ -951,4 +877,3 @@ renderCategories(); renderRegions(); renderCart();
 </script>
 </body>
 </html>
-
