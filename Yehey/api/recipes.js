@@ -12,7 +12,7 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Missing SPOONACULAR_KEY env var' });
     }
 
-    // Allow: ingredients only, cuisine only, or both.
+    // ❗ Only error if BOTH are missing (no ingredients & no cuisine)
     if (!q && !cuisine) {
       return res.status(400).json({ error: 'Missing q or cuisine parameter' });
     }
@@ -91,4 +91,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Server error' });
   }
 }
-
