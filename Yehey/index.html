@@ -99,7 +99,7 @@
   .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
   .section h2{font-size:22px;margin:0}
   .section p{margin:4px 0 0;color:#6b7280;font-size:14px}
-  ..view-all{color:#64748b;font-weight:500;text-decoration:none;border-radius:10px;padding:8px 10px}
+  .view-all{color:#64748b;font-weight:500;text-decoration:none;border-radius:10px;padding:8px 10px}
   .view-all:hover{background:rgba(100,116,139,.08)}
 
   /* Cards */
@@ -232,7 +232,7 @@
     <!-- Hero with mascot -->
     <header class="hero" aria-labelledby="page-title">
       <div class="hero-left">
-        <h1 id="page-title" class="title">Find ideas from what you have</hh1>
+        <h1 id="page-title" class="title">Find ideas from what you have</h1>
         <p class="subtitle">Type your ingredients, then pick cuisines or categories. We’ll suggest recipes that match your pantry.</p>
 
         <div class="search-wrap" role="search">
@@ -890,4 +890,66 @@ resultsBody.addEventListener('click', e => {
   const id = btn.dataset.rid;
   const rec = latestResults.find(r => String(r.id) === String(id));
   if(rec && rec.instructions){
-    op
+    openStepsModal(rec.title, rec.instructions);
+  } else {
+    openStepsModal(rec.title, 'No instructions available for this recipe.');
+  }
+});
+
+/* ---------------- Generate Recipes (Spoonacular call, with cuisine) ---------------- */
+generateBtn.addEventListener('click', async ()=>{
+  const ingredients = [...state.ingredients];
+  const countries   = [...state.countries];
+
+  if(ingredients.length===0 && countries.length===0){
+    openResults();
+    resultsBody.innerHTML = `<div class="loading">Add at least one ingredient or choose a region first 😊</div>`;
+    resultsStatus.textContent = '';
+    return;
+  }
+
+  resultsBody.innerHTML = `<div class="loading"><span class="spinner"></span><span>Finding real recipes…</span></div>`;
+  resultsStatus.textContent = '';
+  openResults();
+
+  const cuisines = countries
+    .map(c => COUNTRY_TO_CUISINE[c])
+    .filter(Boolean);
+  const cuisineParam = cuisines.join(',');
+  const ingredientsQuery = ingredients.join(', ');
+
+  try{
+    const url = `/api/recipes?q=${encodeURIComponent(ingredientsQuery)}&cuisine=${encodeURIComponent(cuisineParam)}`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('Search failed');
+    const data = await res.json();
+
+    const ingSet = new Set(ingredients.map(norm));
+    const countrySet = new Set(countries);
+    latestResults = (data.results || []).map(r => {
+      const scored = scoreRecipe(r, ingSet, countrySet);
+      return {...r, ...scored};
+    });
+
+    if(!latestResults.length){
+      resultsBody.innerHTML = `<div class="loading">No recipes found yet. Try fewer ingredients, or just select a region and try again.</div>`;
+      resultsStatus.textContent = '';
+      return;
+    }
+
+    maxMissingVal.textContent = maxMissing.value;
+    applyFiltersAndRender();
+  } catch(err){
+    console.error(err);
+    resultsBody.innerHTML = `<div class="loading">Error contacting recipe service. Please try again later.</div>`;
+    resultsStatus.textContent = '';
+  }
+});
+
+/* ---------------- Boot ---------------- */
+renderCategories(); renderRegions(); renderCart();
+</script>
+</body>
+</html>
+
+
