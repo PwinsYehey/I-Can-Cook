@@ -23,9 +23,12 @@ export default async function handler(req, res) {
     url.searchParams.set('addRecipeInformation', 'true');
     url.searchParams.set('fillIngredients', 'true');
 
+    // Only send query if we actually have one
     if (q) {
       url.searchParams.set('query', q);
     }
+
+    // Cuisine filter (can be "japanese", "italian,mexican", etc.)
     if (cuisine) {
       url.searchParams.set('cuisine', cuisine);
     }
@@ -43,6 +46,7 @@ export default async function handler(req, res) {
       const ingredients =
         (item.extendedIngredients || []).map(i => (i.name || '').toLowerCase());
 
+      // You prefer Spoonacular’s own page first
       const primaryUrl =
         item.spoonacularSourceUrl ||
         item.sourceUrl ||
@@ -50,11 +54,9 @@ export default async function handler(req, res) {
 
       // Build a clean instructions text if available
       let instructionsText = '';
-      if (
-        Array.isArray(item.analyzedInstructions) &&
-        item.analyzedInstructions.length > 0 &&
-        Array.isArray(item.analyzedInstructions[0].steps)
-      ) {
+      if (Array.isArray(item.analyzedInstructions) &&
+          item.analyzedInstructions.length > 0 &&
+          Array.isArray(item.analyzedInstructions[0].steps)) {
         const steps = item.analyzedInstructions[0].steps;
         if (steps.length) {
           instructionsText = steps
@@ -89,6 +91,8 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Server error' });
   }
 }
+
+
 
 
 
