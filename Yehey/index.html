@@ -1,383 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>TaDa I Can Cook!</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#F9F5EC; --text:#0f172a; --muted:#5b6478; --accent:#7A9E7E; --ring:rgba(122,158,126,.45);
-    --shadow:0 10px 25px rgba(16,24,40,.08), 0 2px 8px rgba(16,24,40,.06); --radius:18px;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
-
-  /* Top Nav (centered menu, social right) */
-  .topnav{position:sticky;top:0;z-index:80;background:rgba(249,245,236,.92);backdrop-filter:saturate(160%) blur(8px);border-bottom:1px solid rgba(15,23,42,.06)}
-  .nav-inner{max-width:1120px;margin:0 auto;padding:10px 20px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
-  .logo-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--ring)}
-  .nav-links{display:flex;gap:24px;justify-content:center;align-items:center}
-  .nav-links a{color:#334155;text-decoration:none;font-weight:600;padding:8px 10px;border-radius:10px}
-  .nav-links a:hover{background:rgba(100,116,139,.10)}
-  .social{display:flex;gap:10px;justify-self:end}
-  .social a{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:12px;background:#fff;border:1px solid rgba(15,23,42,.08);box-shadow:var(--shadow)}
-  .social svg{width:18px;height:18px}
-  .hamburger{display:none;justify-self:end;border:1px solid rgba(15,23,42,.12);background:#fff;padding:8px 10px;border-radius:12px;cursor:pointer}
-  @media (max-width:820px){
-    .nav-inner{grid-template-columns:auto 1fr auto auto}
-    .hamburger{display:inline-flex}
-    .nav-links{display:none;position:absolute;left:0;right:0;top:56px;background:#fff;border-bottom:1px solid rgba(15,23,42,.08);padding:12px 20px;box-shadow:0 12px 25px rgba(16,24,40,.10)}
-    .nav-links.open{display:flex;flex-direction:column;gap:8px}
-  }
-
-  .container{max-width:1120px;margin:0 auto;padding:28px 20px 140px}
-  .title{font-size:clamp(28px,4.2vw,44px);font-weight:700;margin:4px 0 8px}
-  .subtitle{color:var(--muted);margin:0 0 18px}
-
-  /* Search with embedded Add */
-  .search-wrap{position:relative;margin-bottom:8px}
-  .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;opacity:.65;pointer-events:none}
-  .search{width:100%;padding:16px 112px 16px 44px;border-radius:24px;border:1.5px solid rgba(15,23,42,.08);background:#fff;box-shadow:var(--shadow);outline:none;font-size:15px}
-  .search:focus{border-color:var(--accent);box-shadow:0 0 0 5px var(--ring),var(--shadow)}
-  .add-inside{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:var(--accent);color:#fff;border:none;font-weight:700;border-radius:999px;padding:10px 18px;cursor:pointer;box-shadow:0 6px 14px rgba(122,158,126,.28)}
-  .add-inside:hover{transform:translateY(-50%) scale(1.04)}
-  .tip{font-size:12.5px;color:#6b7280;margin-top:6px}
-
-  /* ---------- HERO ILLUSTRATION UPGRADE ---------- */
-  .hero {
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-top:20px;
-    gap:30px;
-    position:relative;
-    padding-bottom:20px;
-  }
-  .hero-left{flex:1;}
-  .hero-illustration{
-    flex:1;
-    position:relative;
-    display:flex;
-    justify-content:center;
-  }
-  .mascot{
-    width:260px;
-    height:auto;
-    filter:drop-shadow(0 10px 30px rgba(0,0,0,0.10));
-    animation:floatUpDown 3s ease-in-out infinite;
-  }
-  .float-1,.float-2,.float-3,.float-4{
-    position:absolute;
-    font-size:32px;
-    opacity:0.9;
-    animation:float 4.5s ease-in-out infinite;
-  }
-  .float-1{top:-10px;left:30px;animation-delay:0s;}
-  .float-2{top:40px;right:20px;animation-delay:.8s;}
-  .float-3{bottom:10px;left:60px;animation-delay:1.6s;}
-  .float-4{bottom:40px;right:70px;animation-delay:2.2s;}
-  @keyframes float{
-    0%,100%{transform:translateY(0);opacity:.9;}
-    50%{transform:translateY(-12px);opacity:1;}
-  }
-  @keyframes floatUpDown{
-    0%,100%{transform:translateY(0);}
-    50%{transform:translateY(-6px);}
-  }
-  @media (max-width:900px){
-    .hero{flex-direction:column;text-align:center;}
-    .hero-illustration{margin-top:20px;}
-  }
-
-  /* Sections */
-  .section{margin-top:28px}
-  .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
-  .section h2{font-size:22px;margin:0}
-  .section p{margin:4px 0 0;color:#6b7280;font-size:14px}
-  .view-all{color:#64748b;font-weight:500;text-decoration:none;border-radius:10px;padding:8px 10px}
-  .view-all:hover{background:rgba(100,116,139,.08)}
-
-  /* Cards */
-  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:14px}
-  @media (max-width:980px){.grid{grid-template-columns:repeat(3,1fr)}}
-  @media (max-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
-
-  .category-card{position:relative;background:linear-gradient(180deg,#fff,#f7faf7);border:1px solid rgba(15,23,42,.06);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);cursor:pointer;transition:transform .2s ease, box-shadow .2s ease}
-  .category-card:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 18px 35px rgba(16,24,40,.12)}
-  .cat-title{display:flex;gap:10px;align-items:center;font-weight:700}
-  .cat-sub{font-size:12.5px;color:#6b7280;margin-top:2px}
-  .emoji{font-size:22px}
-  .sel-badge{position:absolute;right:12px;top:12px;background:var(--accent);color:#fff;font-weight:700;font-size:12px;line-height:1;padding:6px 8px;border-radius:999px;box-shadow:var(--shadow)}
-  .hidden{display:none!important}
-
-  /* Chips */
-  .chips{display:flex;flex-wrap:wrap;gap:8px}
-  .chip{background:#f3faf4;border:1px solid rgba(122,158,126,.35);color:#234;padding:8px 10px;border-radius:999px;font-size:13px;cursor:pointer;white-space:nowrap}
-  .chip.is-selected{background:var(--accent);color:#fff;border-color:rgba(122,158,126,.85)}
-
-  /* Modal (picker + results + steps) */
-  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1000}
-  .modal.open{display:flex}
-  .backdrop{position:absolute;inset:0;background:rgba(15,23,42,.32)}
-  .dialog{
-    position:relative;background:#fff;border-radius:24px;
-    box-shadow:0 24px 60px rgba(0,0,0,.22), var(--shadow);
-    border:1px solid rgba(15,23,42,.06);
-    max-width:960px;width:min(94vw,960px);max-height:86vh;
-    padding:22px;display:flex;flex-direction:column;gap:6px
-  }
-  .dialog-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
-  .dialog-title{font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px}
-  .xbtn{all:unset;cursor:pointer;border-radius:12px;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
-  .xbtn:hover{background:#f1f5f9}
-  .dialog-sub{font-size:12.5px;color:#6b7280;margin:2px 0 10px}
-  .dialog-body{overflow:auto;max-height:58vh;padding:2px}
-  .dialog-footer{margin-top:12px}
-  .btn-primary{
-    width:100%;height:52px;border:none;background:var(--accent);
-    color:#fff;font-weight:700;border-radius:16px;cursor:pointer;
-    box-shadow:0 14px 28px rgba(122,158,126,.25)
-  }
-  .btn-primary:hover{filter:brightness(.98)}
-
-  /* Results grid */
-  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
-  .toolbar .seg{display:flex;gap:6px;align-items:center;color:#475569;font-size:13px}
-  .recipes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-  @media (max-width:980px){ .recipes{grid-template-columns:repeat(2,1fr)} }
-  @media (max-width:640px){ .recipes{grid-template-columns:1fr} }
-
-  .recipe-card{
-    display:flex;flex-direction:column;overflow:hidden;border-radius:16px;
-    border:1px solid rgba(15,23,42,.06);background:#fff;box-shadow:var(--shadow);
-  }
-  .recipe-thumb{aspect-ratio:16/9;object-fit:cover;background:#f1f5f9}
-  .recipe-body{padding:12px}
-  .recipe-title{font-weight:700;margin:0 0 6px;font-size:16px;line-height:1.3}
-  .recipe-meta{display:flex;gap:8px;align-items:center;color:#64748b;font-size:12px;flex-wrap:wrap}
-  .badge{border:1px solid #d1fae5;background:#ecfdf5;border-radius:999px;font-size:11px;padding:4px 8px;color:#065f46}
-  .missing{color:#9a3412;background:#fff7ed;border:1px solid #fed7aa;border-radius:999px;padding:3px 8px;font-size:11px}
-  .recipe-actions{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(15,23,42,.06)}
-  .recipe-actions a,
-  .recipe-actions button{
-    flex:1;
-    text-align:center;
-    text-decoration:none;
-    border:1px solid rgba(15,23,42,.12);
-    padding:8px;
-    border-radius:10px;
-    font-weight:600;
-    cursor:pointer;
-    background:#fff;
-    color:#0f172a;
-  }
-  .recipe-actions a:hover,
-  .recipe-actions button:hover{box-shadow:var(--shadow)}
-  .loading{display:flex;gap:10px;align-items:center;justify-content:center;padding:28px 6px;color:#64748b}
-  .spinner{width:18px;height:18px;border:3px solid #e5e7eb;border-top-color:var(--accent);border-radius:999px;animation:sp 0.9s linear infinite}
-  @keyframes sp{to{transform:rotate(1turn)}}
-
-  /* Steps list */
-  .steps-list{padding-left:20px;font-size:14px;color:#334155}
-  .steps-list li{margin-bottom:6px}
-
-  /* Cart */
-  .cart{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid rgba(15,23,42,.06);box-shadow:0 -10px 30px rgba(16,24,40,.08);padding:12px 0;z-index:50}
-  .cart-inner{max-width:1120px;margin:0 auto;padding:8px 20px;display:flex;gap:12px;align-items:center}
-  .cart-title{color:#6b7280;font-size:14px;white-space:nowrap}
-  .cart-tags{display:flex;gap:8px;align-items:center;flex-wrap:wrap;max-height:80px;overflow:auto;padding-right:8px}
-  .itag{display:inline-flex;align-items:center;gap:6px;background:#edf7ee;border:1px solid rgba(122,158,126,.45);border-radius:999px;padding:8px 10px;font-size:13px}
-  .itag.country{background:#eef6ff;border-color:#cfe7ff}
-  .itag button{all:unset;cursor:pointer;padding:4px 8px;border-radius:8px;line-height:1}
-  .itag button:hover{background:rgba(15,23,42,.08)}
-  .spacer{flex:1}
-  .btn{border:1.5px solid rgba(15,23,42,.12);background:#fff;padding:10px 14px;border-radius:12px;font-weight:600;cursor:pointer}
-  .btn:hover{box-shadow:var(--shadow)}
-  .btn-ghost{border-color:#cbd5e1;color:#475569}
-  .btn-outline{border-color:var(--accent);color:var(--accent);background:linear-gradient(180deg,#f7fff9,#ffffff)}
-  .btn-solid{background:var(--accent);color:#fff;border-color:var(--accent)}
-  @media (max-width:640px){.cart-inner{flex-wrap:wrap}.cart-tags{max-height:120px}}
-
-  .footer{font-size:12px;color:#94a3b8;display:flex;gap:14px;align-items:center;justify-content:center;margin-top:26px}
-</style>
-</head>
-<body>
-  <!-- Header -->
-  <nav class="topnav" role="navigation" aria-label="Primary">
-    <div class="nav-inner">
-      <div class="brand"><span class="logo-dot"></span><span>TaDa I Can Cook!</span></div>
-      <div id="navMenu" class="nav-links">
-        <a href="#">Home</a>
-        <a href="#cat-title">Let’s Cook!</a>
-        <a href="#region-title">About Us</a>
-        <a href="#">Contact</a>
-      </div>
-      <button id="burger" class="hamburger" aria-label="Toggle menu" aria-expanded="false">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="#334155" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </button>
-      <div class="social" aria-label="Social links">
-        <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none"><path d="M14 9h3V6h-3a3 3 0 0 0-3 3v3H8v3h3v6h3v-6h3l1-3h-4V9a1 1 0 0 1 1-1Z" fill="#334155"/></svg></a>
-        <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="#334155"/><circle cx="12" cy="12" r="4.2" stroke="#334155"/><circle cx="17.5" cy="6.5" r="1.2" fill="#334155"/></svg></a>
-        <a href="#" aria-label="X (Twitter)"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3h3.6l5.4 7.1L18.4 3H21l-7.4 9.3L21 21h-3.6l-6-7.9L5.6 21H3l7.8-9.8L3 3Z" fill="#334155"/></svg></a>
-      </div>
-    </div>
-  </nav>
-
-  <div class="container">
-    <!-- Hero with mascot -->
-    <header class="hero" aria-labelledby="page-title">
-      <div class="hero-left">
-        <h1 id="page-title" class="title">Find ideas from what you have</h1>
-        <p class="subtitle">Type your ingredients, then pick cuisines or categories. We’ll suggest recipes that match your pantry.</p>
-
-        <div class="search-wrap" role="search">
-          <svg class="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15Zm0 0 7 7" stroke="#64748b" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-          <input id="ingredientInput" class="search" type="text" placeholder="e.g., chicken, onion, garlic" aria-label="Add ingredients" />
-          <button id="addInside" class="add-inside" type="button">Add</button>
-        </div>
-        <div class="tip">Tip: separate with commas. Press Enter to add quickly.</div>
-      </div>
-
-      <div class="hero-illustration">
-        <!-- Cute cooking pot illustration -->
-        <svg class="mascot" viewBox="0 0 200 200">
-          <ellipse cx="100" cy="170" rx="55" ry="12" fill="#e2e8f0"/>
-          <rect x="45" y="70" width="110" height="70" rx="18" fill="#7A9E7E"/>
-          <rect x="55" y="65" width="90" height="12" rx="6" fill="#94b89a"/>
-          <circle cx="80" cy="105" r="9" fill="#fff"/>
-          <circle cx="120" cy="105" r="9" fill="#fff"/>
-          <circle cx="80" cy="105" r="5" fill="#7a9e7e"/>
-          <circle cx="120" cy="105" r="5" fill="#7a9e7e"/>
-          <path d="M75 125 Q100 145 125 125" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>
-          <path d="M30 80 Q50 60 70 80" stroke="#7a9e7e" stroke-width="8" fill="none" stroke-linecap="round"/>
-          <path d="M130 80 Q150 60 170 80" stroke="#7a9e7e" stroke-width="8" fill="none" stroke-linecap="round"/>
-        </svg>
-
-        <!-- Floating decorative elements -->
-        <div class="float-1">🍅</div>
-        <div class="float-2">🥕</div>
-        <div class="float-3">🍳</div>
-        <div class="float-4">🧄</div>
-      </div>
-    </header>
-
-    <!-- Ingredient Categories -->
-    <section class="section" aria-labelledby="cat-title">
-      <div class="section-head">
-        <div>
-          <h2 id="cat-title">Categories</h2>
-          <p>Choose what’s in your pantry</p>
-        </div>
-        <a class="view-all" href="#">View all</a>
-      </div>
-      <div id="categoryGrid" class="grid"></div>
-    </section>
-
-    <!-- Regions -->
-    <section class="section" aria-labelledby="region-title">
-      <div class="section-head">
-        <div>
-          <h2 id="region-title">Regions</h2>
-          <p>Tap to choose a country</p>
-        </div>
-        <a class="view-all" href="#">View all</a>
-      </div>
-      <div id="regionGrid" class="grid"></div>
-    </section>
-
-    <div class="footer">© 2025 TaDa! I Can Cook — crafted with ❤️</div>
-  </div>
-
-  <!-- Bottom cart -->
-  <div class="cart" role="region" aria-label="Ingredient and cuisine cart">
-    <div class="cart-inner">
-      <div id="cartTitle" class="cart-title">Add ingredients or pick at least one category/cuisine.</div>
-      <div id="cartTags" class="cart-tags" aria-live="polite"></div>
-      <div class="spacer"></div>
-      <button id="clearBtn" class="btn btn-ghost" type="button">Clear All</button>
-      <button id="surpriseBtn" class="btn btn-outline" type="button">Surprise Me</button>
-      <button id="generateBtn" class="btn btn-solid" type="button">Generate Recipes</button>
-    </div>
-  </div>
-
-  <!-- PICKER MODAL (ingredients/countries) -->
-  <div id="pickerModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
-    <div class="backdrop" data-dismiss></div>
-    <div class="dialog" role="document" aria-labelledby="pickerTitle" style="max-width:640px;">
-      <div class="dialog-header">
-        <div id="pickerTitle" class="dialog-title"></div>
-        <button class="xbtn" data-dismiss aria-label="Close">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M6 6l12 12M18 6L6 18" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
-      <div id="pickerSub" class="dialog-sub"></div>
-      <div id="pickerBody" class="dialog-body"></div>
-      <div class="dialog-footer">
-        <button id="confirmBtn" class="btn-primary" type="button">Confirm</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- RESULTS MODAL -->
-  <div id="resultsModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
-    <div class="backdrop" data-close-results></div>
-    <div class="dialog" role="document">
-      <div class="dialog-header">
-        <div class="dialog-title">Recipe suggestions</div>
-        <button class="xbtn" data-close-results aria-label="Close">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M6 6l12 12M18 6L6 18" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
-
-      <div class="toolbar">
-        <div class="seg"><input id="onlyFull" type="checkbox"> <label for="onlyFull">Only full matches</label></div>
-        <div class="seg">
-          <label for="maxMissing">Max missing:</label>
-          <input id="maxMissing" type="range" min="0" max="10" step="1" value="4">
-          <span id="maxMissingVal">4</span>
-        </div>
-        <div class="seg">
-          <label for="sortBy">Sort</label>
-          <select id="sortBy">
-            <option value="best">Best match</option>
-            <option value="missing">Fewest missing</option>
-            <option value="coverage">Most coverage</option>
-          </select>
-        </div>
-        <div class="seg" id="resultsStatus"></div>
-      </div>
-
-      <div id="resultsBody" class="dialog-body"></div>
-    </div>
-  </div>
-
-  <!-- INSTRUCTIONS MODAL -->
-  <div id="stepsModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
-    <div class="backdrop" data-close-steps></div>
-    <div class="dialog" role="document" style="max-width:700px;">
-      <div class="dialog-header">
-        <div id="stepsTitle" class="dialog-title">Instructions</div>
-        <button class="xbtn" data-close-steps aria-label="Close">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M6 6l12 12M18 6L6 18" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
-      <div id="stepsBody" class="dialog-body"></div>
-    </div>
-  </div>
-
 <script>
 /* ---------------- Data ---------------- */
 const CATEGORY_DATA = [
@@ -487,7 +107,6 @@ const REGION_DATA = [
   { key:'caribbean',     label:'Caribbean',     icon:'🏝️', countries:['Puerto Rico','Dominican Republic','Trinidad & Tobago','Haiti','Barbados','Bahamas','Cuba','Jamaica'] },
 ];
 
-/* Map country → Spoonacular cuisine slug */
 const COUNTRY_TO_CUISINE = {
   'Philippines':'filipino',
   'Japan':'japanese',
@@ -517,7 +136,7 @@ const COUNTRY_TO_CUISINE = {
 
 /* ---------------- State ---------------- */
 const state = { ingredients:new Set(), countries:new Set() };
-let latestResults = []; // last API results with scores
+let latestResults = [];
 
 /* ---------------- DOM ---------------- */
 const categoryGrid = document.getElementById('categoryGrid');
@@ -532,14 +151,12 @@ const generateBtn  = document.getElementById('generateBtn');
 const burger       = document.getElementById('burger');
 const navMenu      = document.getElementById('navMenu');
 
-/* Picker modal */
 const modal      = document.getElementById('pickerModal');
 const modalTitle = document.getElementById('pickerTitle');
 const modalSub   = document.getElementById('pickerSub');
 const modalBody  = document.getElementById('pickerBody');
 const confirmBtn = document.getElementById('confirmBtn');
 
-/* Results modal */
 const resultsModal  = document.getElementById('resultsModal');
 const resultsBody   = document.getElementById('resultsBody');
 const resultsStatus = document.getElementById('resultsStatus');
@@ -548,7 +165,6 @@ const maxMissing    = document.getElementById('maxMissing');
 const maxMissingVal = document.getElementById('maxMissingVal');
 const sortBy        = document.getElementById('sortBy');
 
-/* Steps modal */
 const stepsModal = document.getElementById('stepsModal');
 const stepsTitle = document.getElementById('stepsTitle');
 const stepsBody  = document.getElementById('stepsBody');
@@ -656,7 +272,8 @@ function renderCart(){
     tag.innerHTML=`${c} <button aria-label="Remove ${c}" data-x="${c}" data-xtype="ctr">✕</button>`;
     cartTags.appendChild(tag);
   });
-  updateCategoryCounts(); updateRegionCounts();
+  updateCategoryCounts();
+  updateRegionCounts();
 }
 cartTags.addEventListener('click',(e)=>{
   const btn=e.target.closest('button[data-x]'); if(!btn) return;
@@ -668,23 +285,29 @@ function updateCategoryCounts(){
   CATEGORY_DATA.forEach(cat=>{
     const count=cat.items.reduce((n,i)=>n+(state.ingredients.has(i)?1:0),0);
     const badge=document.querySelector(`[data-badge="${cat.key}"]`);
-    if(!badge) return; if(count>0){ badge.textContent=count; badge.classList.remove('hidden'); } else { badge.textContent=''; badge.classList.add('hidden'); }
+    if(!badge) return;
+    if(count>0){ badge.textContent=count; badge.classList.remove('hidden'); }
+    else { badge.textContent=''; badge.classList.add('hidden'); }
   });
 }
 function updateRegionCounts(){
   REGION_DATA.forEach(r=>{
     const count=r.countries.reduce((n,c)=>n+(state.countries.has(c)?1:0),0);
     const badge=document.querySelector(`[data-region-badge="${r.key}"]`);
-    if(!badge) return; if(count>0){ badge.textContent=count; badge.classList.remove('hidden'); } else { badge.textContent=''; badge.classList.add('hidden'); }
+    if(!badge) return;
+    if(count>0){ badge.textContent=count; badge.classList.remove('hidden'); }
+    else { badge.textContent=''; badge.classList.add('hidden'); }
   });
 }
 
 /* ---------------- Input & Buttons ---------------- */
 function capitalize(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : ''; }
+
 function commitInput(){
   const parts=input.value.split(',').map(s=>s.trim()).filter(Boolean);
   parts.forEach(p=>state.ingredients.add(p.toLowerCase()));
-  input.value=''; renderCart();
+  input.value='';
+  renderCart();
 }
 addInside.addEventListener('click', commitInput);
 input.addEventListener('keydown',(e)=>{ if(e.key==='Enter'){ e.preventDefault(); commitInput(); }});
@@ -692,7 +315,8 @@ input.addEventListener('input',()=>{
   if(input.value.includes(',')){
     const arr=input.value.split(','), last=arr.pop();
     arr.map(s=>s.trim()).filter(Boolean).forEach(p=>state.ingredients.add(p.toLowerCase()));
-    input.value=last.trim(); renderCart();
+    input.value=last.trim();
+    renderCart();
   }
 });
 clearBtn.addEventListener('click',()=>{
@@ -748,7 +372,7 @@ stepsModal.addEventListener('keydown', e => {
   if(e.key === 'Escape') closeStepsModal();
 });
 
-/* ---------------- Ingredient normalization + SYNONYMS ---------------- */
+/* ---------------- Ingredient normalization + flexible match ---------------- */
 const SYNONYMS = new Map([
   ['ground beef','beef'],
   ['minced beef','beef'],
@@ -766,6 +390,7 @@ const SYNONYMS = new Map([
   ['scallion','green onion'],
   ['bell pepper','pepper'],
   ['capsicum','pepper'],
+  ['chili pepper','chile'],
   ['chili','chile'],
   ['chilli','chile'],
   ['calamansi','lime'],
@@ -776,101 +401,232 @@ const SYNONYMS = new Map([
   ['loaf bread','bread'],
   ['whole wheat bread','bread'],
   ['pandesal','bread'],
+  ['baguette','bread'],
   ['burger buns','bread'],
   ['hotdog buns','bread'],
   ['banana ketchup','ketchup'],
   ['cane vinegar','vinegar'],
   ['olive oil','oil'],
   ['vegetable oil','oil'],
+  ['sesame oil','oil'],
   ['soy sauce','soysauce'],
   ['fish sauce','fishsauce'],
+  ['black pepper','pepper'],
   ['bagoong (shrimp paste)','shrimp paste'],
+  ['white rice','rice'],
+  ['brown rice','rice'],
+  ['jasmine rice','rice'],
+  ['fried rice','rice'],
+  ['egg fried rice','rice'],
+  ['scrambled eggs','egg'],
+  ['eggs','egg']
 ]);
 
+const OPTIONAL_PANTRY = new Set([
+  'salt','pepper','oil','water','sugar','soy sauce','soysauce','vinegar',
+  'fish sauce','fishsauce','butter','garlic','onion'
+]);
+
+const CORE_HINTS = new Set([
+  'rice','egg','chicken','pork','beef','fish','shrimp','noodles','pasta',
+  'bread','potato','tomato','milk','cheese','tuna'
+]);
+
+function baseNormalize(s){
+  return (s || '')
+    .toLowerCase()
+    .replace(/\([^)]*\)/g, ' ')
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function singularize(word){
+  if (!word) return word;
+  if (word.endsWith('ies') && word.length > 4) return word.slice(0, -3) + 'y';
+  if (word.endsWith('es') && word.length > 3) return word.slice(0, -2);
+  if (word.endsWith('s') && word.length > 3) return word.slice(0, -1);
+  return word;
+}
+
 function norm(x){
-  let s = x.toLowerCase().trim();
-  s = s.replace(/\s+/g,' ');
-  if(SYNONYMS.has(s)) s = SYNONYMS.get(s);
+  let s = baseNormalize(x);
+  if (SYNONYMS.has(s)) s = SYNONYMS.get(s);
+  s = baseNormalize(s);
   return s;
 }
 
-/* Escape HTML for instructions text */
+function tokensOf(s){
+  return norm(s).split(' ').map(singularize).filter(Boolean);
+}
+
+function ingredientMatches(userIng, recipeIng){
+  const a = norm(userIng);
+  const b = norm(recipeIng);
+  if (!a || !b) return false;
+  if (a === b) return true;
+  if (a.includes(b) || b.includes(a)) return true;
+
+  const at = tokensOf(a);
+  const bt = tokensOf(b);
+
+  if (!at.length || !bt.length) return false;
+
+  const overlap = at.filter(t => bt.includes(t));
+  if (overlap.length >= 1) return true;
+
+  return false;
+}
+
+function uniqueNormalized(arr){
+  const out = [];
+  const seen = new Set();
+  for (const item of arr || []) {
+    const n = norm(item);
+    if (n && !seen.has(n)) {
+      seen.add(n);
+      out.push(n);
+    }
+  }
+  return out;
+}
+
+function scoreRecipe(recipe, inputSet, chosenCountries){
+  const recipeIngredients = uniqueNormalized(recipe.ingredients || []);
+  const inputIngredients = [...inputSet];
+  const matchedList = [];
+  const missingList = [];
+
+  for (const userIng of inputIngredients) {
+    const hasMatch = recipeIngredients.some(recIng => ingredientMatches(userIng, recIng));
+    if (hasMatch) matchedList.push(userIng);
+  }
+
+  for (const recIng of recipeIngredients) {
+    const hasInputMatch = inputIngredients.some(userIng => ingredientMatches(userIng, recIng));
+    if (!hasInputMatch && !OPTIONAL_PANTRY.has(recIng)) {
+      missingList.push(recIng);
+    }
+  }
+
+  const matched = matchedList.length;
+  const coverage = inputIngredients.length ? matched / inputIngredients.length : 0;
+  const missing = missingList.length;
+
+  let cuisineBoost = 0;
+  if (chosenCountries.size) {
+    const chosenCuisineSlugs = [...chosenCountries]
+      .map(c => (COUNTRY_TO_CUISINE[c] || '').toLowerCase())
+      .filter(Boolean);
+
+    const recipeCuisine = (recipe.cuisine || '').toLowerCase();
+    const recipeCountry = (recipe.country || '').toLowerCase();
+
+    if ([...chosenCountries].some(c => recipeCountry.includes(c.toLowerCase()))) {
+      cuisineBoost += 0.12;
+    }
+
+    if (chosenCuisineSlugs.some(c => recipeCuisine.includes(c))) {
+      cuisineBoost += 0.12;
+    }
+  }
+
+  let titleBoost = 0;
+  const title = norm(recipe.title || '');
+  inputIngredients.forEach(ing => {
+    const n = norm(ing);
+    if (n && title.includes(n)) titleBoost += 0.08;
+  });
+
+  let coreBoost = 0;
+  matchedList.forEach(ing => {
+    if (CORE_HINTS.has(norm(ing))) coreBoost += 0.05;
+  });
+
+  const sourceBoost =
+    recipe.sourceType === 'api' ? 0.08 :
+    recipe.sourceType === 'search' ? 0.02 : 0;
+
+  const score =
+    coverage * 0.55 +
+    (1 / (1 + missing)) * 0.20 +
+    cuisineBoost +
+    Math.min(titleBoost, 0.20) +
+    Math.min(coreBoost, 0.15) +
+    sourceBoost;
+
+  return {
+    score,
+    coverage,
+    missing,
+    matchedList,
+    missingList
+  };
+}
+
 function escapeHtml(str){
   return (str || '').replace(/[&<>"']/g, ch => ({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
   }[ch]));
 }
 
-/* ---------------- SuperCook-style matcher ---------------- */
-function scoreRecipe(recipe, inputSet, chosenCountries){
-  const recSet = new Set((recipe.ingredients || []).map(norm));
-  let matched=0;
-  const matchedList=[], missingList=[];
-  inputSet.forEach(i=>{ if(recSet.has(i)){ matched++; matchedList.push(i);} });
-
-  recSet.forEach(i=>{ if(!inputSet.has(i)) missingList.push(i); });
-
-  const coverage = inputSet.size ? matched / inputSet.size : 0;
-  const missing = missingList.length;
-
-  let cuisineBoost = 0;
-  if(chosenCountries.size){
-    if(recipe.country && chosenCountries.has(recipe.country)) cuisineBoost = 0.05;
-    const cu = (recipe.cuisine || '').toLowerCase();
-    if(cu && [...chosenCountries].some(c=>cu.includes(c.toLowerCase().slice(0,4)))){
-      cuisineBoost = Math.max(cuisineBoost, 0.03);
-    }
-  }
-  const score = coverage*0.7 + (1/(1+missing))*0.25 + cuisineBoost;
-  return {score, coverage, missing, matchedList, missingList};
-}
-
-/* Apply filters on latestResults and render */
+/* ---------------- Apply filters on latestResults and render ---------------- */
 function applyFiltersAndRender(){
   if(!latestResults.length){
     resultsBody.innerHTML = `<div class="loading">No results yet. Add ingredients and tap Generate Recipes.</div>`;
     resultsStatus.textContent = '';
     return;
   }
+
   let list = [...latestResults];
   const maxMiss = parseInt(maxMissing.value,10);
-  list = list.filter(r=> r.missing <= maxMiss);
+
+  list = list.filter(r => r.missing <= maxMiss);
+
   if(onlyFull.checked){
-    list = list.filter(r=> r.coverage === 1 && r.missing === 0);
+    list = list.filter(r => r.coverage === 1 && r.missing === 0);
   }
+
   const mode = sortBy.value;
-  if(mode==='missing') list.sort((a,b)=> a.missing - b.missing || b.coverage - a.coverage);
-  else if(mode==='coverage') list.sort((a,b)=> b.coverage - a.coverage || a.missing - b.missing);
-  else list.sort((a,b)=> b.score - a.score);
+  if(mode === 'missing') list.sort((a,b)=> a.missing - b.missing || b.coverage - a.coverage || b.score - a.score);
+  else if(mode === 'coverage') list.sort((a,b)=> b.coverage - a.coverage || a.missing - b.missing || b.score - a.score);
+  else list.sort((a,b)=> b.score - a.score || b.coverage - a.coverage || a.missing - b.missing);
 
   renderRecipeResults(list);
 }
 
-/* Render recipe cards */
+/* ---------------- Render recipe cards ---------------- */
 function renderRecipeResults(list){
   resultsStatus.textContent = `${list.length} result${list.length!==1?'s':''}`;
+
   if(!list.length){
     resultsBody.innerHTML = `<div class="loading">No matches for this filter. Try increasing “Max missing” or untick “Only full matches”.</div>`;
     return;
   }
+
   const grid = document.createElement('div');
   grid.className = 'recipes';
   grid.innerHTML = list.map(r => {
-    const pct = Math.round(r.coverage*100);
-    const full = (r.coverage===1 && r.missing===0);
-    const missingStr = r.missingList?.slice(0,3).map(capitalize).join(', ') + (r.missingList && r.missingList.length>3?'…':'');
+    const pct = Math.round(r.coverage * 100);
+    const full = (r.coverage === 1 && r.missing === 0);
+    const missingStr = r.missingList?.slice(0,3).map(capitalize).join(', ') + (r.missingList && r.missingList.length > 3 ? '…' : '');
     const hasSteps = !!(r.instructions && r.instructions.trim().length);
+    const sourceLabel =
+      r.sourceType === 'search' ? 'Web fallback' :
+      r.sourceType === 'api' ? 'Recipe API' :
+      (r.source || '');
+
     return `
     <article class="recipe-card">
       <img class="recipe-thumb" src="${r.image || ''}" alt="" onerror="this.style.display='none'"/>
       <div class="recipe-body">
-        <h3 class="recipe-title">${r.title}</h3>
+        <h3 class="recipe-title">${escapeHtml(r.title || '')}</h3>
         <div class="recipe-meta">
           <span class="badge">${isNaN(pct)?'—':pct+'% match'}</span>
-          ${full ? `<span class="badge">✅ Uses all you have</span>` :
-            (typeof r.missing==='number' ? `<span class="missing">+${r.missing} needed${r.missing?': '+(missingStr||'') : ''}</span>` : '')
+          ${full ? `<span class="badge">✅ Strong match</span>` :
+            (typeof r.missing==='number' ? `<span class="missing">+${r.missing} needed${r.missing ? ': ' + (missingStr || '') : ''}</span>` : '')
           }
-          <span>${capitalize(r.cuisine || '')}${r.country ? ' • '+r.country : ''}${r.source ? ' • '+r.source : ''}</span>
+          <span>${capitalize(r.cuisine || '')}${r.country ? ' • '+escapeHtml(r.country) : ''}${sourceLabel ? ' • '+escapeHtml(sourceLabel) : ''}</span>
         </div>
       </div>
       <div class="recipe-actions">
@@ -879,11 +635,12 @@ function renderRecipeResults(list){
       </div>
     </article>`;
   }).join('');
+
   resultsBody.innerHTML = '';
   resultsBody.appendChild(grid);
 }
 
-/* View Steps button handler (event delegation) */
+/* ---------------- View Steps button handler ---------------- */
 resultsBody.addEventListener('click', e => {
   const btn = e.target.closest('.view-steps');
   if(!btn) return;
@@ -891,30 +648,31 @@ resultsBody.addEventListener('click', e => {
   const rec = latestResults.find(r => String(r.id) === String(id));
   if(rec && rec.instructions){
     openStepsModal(rec.title, rec.instructions);
-  } else {
+  } else if (rec) {
     openStepsModal(rec.title, 'No instructions available for this recipe.');
   }
 });
 
-/* ---------------- Generate Recipes (Spoonacular call, with cuisine) ---------------- */
+/* ---------------- Generate Recipes ---------------- */
 generateBtn.addEventListener('click', async ()=>{
-  const ingredients = [...state.ingredients];
+  const ingredients = [...state.ingredients].map(norm).filter(Boolean);
   const countries   = [...state.countries];
 
-  if(ingredients.length===0 && countries.length===0){
+  if(ingredients.length === 0 && countries.length === 0){
     openResults();
     resultsBody.innerHTML = `<div class="loading">Add at least one ingredient or choose a region first 😊</div>`;
     resultsStatus.textContent = '';
     return;
   }
 
-  resultsBody.innerHTML = `<div class="loading"><span class="spinner"></span><span>Finding real recipes…</span></div>`;
+  resultsBody.innerHTML = `<div class="loading"><span class="spinner"></span><span>Finding recipes…</span></div>`;
   resultsStatus.textContent = '';
   openResults();
 
   const cuisines = countries
     .map(c => COUNTRY_TO_CUISINE[c])
     .filter(Boolean);
+
   const cuisineParam = cuisines.join(',');
   const ingredientsQuery = ingredients.join(', ');
 
@@ -922,17 +680,22 @@ generateBtn.addEventListener('click', async ()=>{
     const url = `/api/recipes?q=${encodeURIComponent(ingredientsQuery)}&cuisine=${encodeURIComponent(cuisineParam)}`;
     const res = await fetch(url);
     if(!res.ok) throw new Error('Search failed');
-    const data = await res.json();
 
-    const ingSet = new Set(ingredients.map(norm));
+    const data = await res.json();
+    const ingSet = new Set(ingredients);
     const countrySet = new Set(countries);
+
     latestResults = (data.results || []).map(r => {
       const scored = scoreRecipe(r, ingSet, countrySet);
-      return {...r, ...scored};
+      return { ...r, ...scored };
     });
 
+    latestResults = latestResults
+      .filter(r => r.coverage > 0 || r.sourceType === 'search')
+      .sort((a,b)=> b.score - a.score);
+
     if(!latestResults.length){
-      resultsBody.innerHTML = `<div class="loading">No recipes found yet. Try fewer ingredients, or just select a region and try again.</div>`;
+      resultsBody.innerHTML = `<div class="loading">No recipes found yet. Try fewer ingredients, like “rice, egg” instead of a long list.</div>`;
       resultsStatus.textContent = '';
       return;
     }
@@ -947,7 +710,7 @@ generateBtn.addEventListener('click', async ()=>{
 });
 
 /* ---------------- Boot ---------------- */
-renderCategories(); renderRegions(); renderCart();
+renderCategories();
+renderRegions();
+renderCart();
 </script>
-</body>
-</html>
