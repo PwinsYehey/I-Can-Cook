@@ -10,7 +10,13 @@ function normalizeText(s = '') {
 }
 
 async function searchGoogle({ q, cuisine, key, cx }) {
-  if (!key || !cx || !q) return [];
+  if (!key || !cx || !q) {
+    return {
+      searchQuery: '',
+      requestUrl: '',
+      items: []
+    };
+  }
 
   const queryCore = q
     .split(',')
@@ -18,7 +24,7 @@ async function searchGoogle({ q, cuisine, key, cx }) {
     .filter(Boolean)
     .join(' ');
 
-  const searchQuery = `${queryCore} ${cuisine ? cuisine + ' ' : ''}recipe`;
+  const searchQuery = `${queryCore} ${cuisine ? cuisine + ' ' : ''}recipe`.trim();
 
   const url = new URL('https://www.googleapis.com/customsearch/v1');
   url.searchParams.set('key', key);
@@ -27,23 +33,30 @@ async function searchGoogle({ q, cuisine, key, cx }) {
   url.searchParams.set('num', '10');
   url.searchParams.set('safe', 'active');
 
-  const r = await fetch(url.toString());
+  const requestUrl = url.toString();
+
+  const r = await fetch(requestUrl);
 
   if (!r.ok) {
     const text = await r.text().catch(() => '');
-    console.error('Google search error:', r.status, text);
-    return [];
+    return {
+      searchQuery,
+      requestUrl,
+      error: {
+        status: r.status,
+        text
+      },
+      items: []
+    };
   }
 
   const j = await r.json();
-  const queryIngredients = q.split(',').map(s => normalizeText(s)).filter(Boolean);
 
-  return (j.items || []).map((item, idx) => {
-    const haystack = `${item.title || ''} ${item.snippet || ''}`.toLowerCase();
-
-    const guessedIngredients = queryIngredients.filter(ing => haystack.includes(ing));
-
-    return {
+  return {
+    searchQuery,
+    requestUrl,
+    raw: j,
+    items: (j.items || []).map((item, idx) => ({
       id: `google-${idx}-${Date.now()}`,
       title: item.title || 'Recipe result',
       url: item.link || '',
@@ -52,10 +65,10 @@ async function searchGoogle({ q, cuisine, key, cx }) {
       sourceType: 'search',
       cuisine: cuisine || '',
       country: '',
-      ingredients: guessedIngredients,
+      ingredients: [],
       instructions: ''
-    };
-  });
+    }))
+  };
 }
 
 export default async function handler(req, res) {
@@ -67,27 +80,27 @@ export default async function handler(req, res) {
     const googleKey = process.env.GOOGLE_SEARCH_KEY;
     const googleCx = process.env.GOOGLE_SEARCH_CX;
 
-    if (!q && !cuisine) {
-      return res.status(400).json({ error: 'Missing q or cuisine parameter' });
-    }
-
-    const googleResults = await searchGoogle({
+    const google = await searchGoogle({
       q,
       cuisine,
       key: googleKey,
       cx: googleCx
     });
 
-    res.setHeader('Cache-Control', 'no-store');
     return res.status(200).json({
       debug: {
-        google: googleResults.length,
         q,
         cuisine,
         hasGoogleKey: !!googleKey,
-        hasGoogleCx: !!googleCx
+        hasGoogleCx: !!googleCx,
+        cx: googleCx || null,
+        searchQuery: google.searchQuery || '',
+        requestUrl: google.requestUrl || '',
+        googleCount: google.items?.length || 0,
+        error: google.error || null
       },
-      results: googleResults
+      results: google.items || [],
+      raw: google.raw || null
     });
   } catch (e) {
     console.error('Handler error:', e);
