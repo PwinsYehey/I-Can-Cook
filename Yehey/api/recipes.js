@@ -9,108 +9,26 @@ function normalizeText(s = '') {
     .trim();
 }
 
-function dedupeResults(items = []) {
-  const seen = new Set();
-  const out = [];
-
-  for (const item of items) {
-    const key = `${normalizeText(item.title)}|${normalizeText(item.url)}`;
-    if (!seen.has(key)) {
-      seen.add(key);
-      out.push(item);
-    }
-  }
-
-  return out;
-}
-
-async function searchSpoonacular({ q, cuisine, key }) {
-  if (!key) return [];
-
-  const url = new URL('https://api.spoonacular.com/recipes/complexSearch');
-  url.searchParams.set('apiKey', key);
-  url.searchParams.set('number', '12');
-  url.searchParams.set('addRecipeInformation', 'true');
-  url.searchParams.set('fillIngredients', 'true');
-  url.searchParams.set('instructionsRequired', 'false');
-  url.searchParams.set('sort', 'relevance');
-
-  if (q) url.searchParams.set('query', q);
-  if (cuisine) url.searchParams.set('cuisine', cuisine);
-
-  const r = await fetch(url.toString());
-  if (!r.ok) {
-    const text = await r.text().catch(() => '');
-    console.error('Spoonacular error:', r.status, text);
-    return [];
-  }
-
-  const j = await r.json();
-
-  return (j.results || []).map(item => {
-    const ingredients =
-      (item.extendedIngredients || []).map(i => (i.name || '').toLowerCase());
-
-    const primaryUrl =
-      item.spoonacularSourceUrl ||
-      item.sourceUrl ||
-      '';
-
-    let instructionsText = '';
-    if (
-      Array.isArray(item.analyzedInstructions) &&
-      item.analyzedInstructions.length > 0 &&
-      Array.isArray(item.analyzedInstructions[0].steps)
-    ) {
-      const steps = item.analyzedInstructions[0].steps;
-      if (steps.length) {
-        instructionsText = steps
-          .map(s => {
-            const num = s.number ? `${s.number}. ` : '';
-            return `${num}${s.step}`.trim();
-          })
-          .join('\n');
-      }
-    }
-
-    if (!instructionsText && item.instructions) {
-      instructionsText = item.instructions;
-    }
-
-    return {
-      id: `api-${item.id}`,
-      title: item.title,
-      url: primaryUrl,
-      image: item.image || '',
-      source: item.sourceName || 'Spoonacular',
-      sourceType: 'api',
-      cuisine: (item.cuisines && item.cuisines[0]) || '',
-      country: '',
-      ingredients,
-      instructions: instructionsText || ''
-    };
-  });
-}
-
 async function searchGoogle({ q, cuisine, key, cx }) {
   if (!key || !cx || !q) return [];
 
-  const searchQueryParts = [
-    q,
-    cuisine ? `${cuisine} recipe` : 'recipe',
-    '(site:allrecipes.com OR site:panlasangpinoy.com OR site:simplyrecipes.com OR site:food.com)'
-  ];
+  const queryCore = q
+    .split(',')
+    .map(s => normalizeText(s))
+    .filter(Boolean)
+    .join(' ');
 
-  const searchQuery = searchQueryParts.filter(Boolean).join(' ');
+  const searchQuery = `${queryCore} ${cuisine ? cuisine + ' ' : ''}recipe`;
 
   const url = new URL('https://www.googleapis.com/customsearch/v1');
   url.searchParams.set('key', key);
   url.searchParams.set('cx', cx);
   url.searchParams.set('q', searchQuery);
-  url.searchParams.set('num', '8');
+  url.searchParams.set('num', '10');
   url.searchParams.set('safe', 'active');
 
   const r = await fetch(url.toString());
+
   if (!r.ok) {
     const text = await r.text().catch(() => '');
     console.error('Google search error:', r.status, text);
@@ -123,13 +41,10 @@ async function searchGoogle({ q, cuisine, key, cx }) {
   return (j.items || []).map((item, idx) => {
     const haystack = `${item.title || ''} ${item.snippet || ''}`.toLowerCase();
 
-    const guessedIngredients = queryIngredients.filter(ing => {
-      if (!ing) return false;
-      return haystack.includes(ing);
-    });
+    const guessedIngredients = queryIngredients.filter(ing => haystack.includes(ing));
 
     return {
-      id: `search-${idx}-${Date.now()}`,
+      id: `google-${idx}-${Date.now()}`,
       title: item.title || 'Recipe result',
       url: item.link || '',
       image: item.pagemap?.cse_image?.[0]?.src || '',
@@ -149,7 +64,6 @@ export default async function handler(req, res) {
     const q = rawQ.slice(0, 300);
     const cuisine = (req.query.cuisine || '').toString().slice(0, 120);
 
-    const spoonacularKey = process.env.SPOONACULAR_KEY;
     const googleKey = process.env.GOOGLE_SEARCH_KEY;
     const googleCx = process.env.GOOGLE_SEARCH_CX;
 
@@ -157,36 +71,23 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing q or cuisine parameter' });
     }
 
-    let results = [];
+    const googleResults = await searchGoogle({
+      q,
+      cuisine,
+      key: googleKey,
+      cx: googleCx
+    });
 
-    const [spoonResults, googleResults] = await Promise.all([
-      searchSpoonacular({
-        q,
-        cuisine,
-        key: spoonacularKey
-      }),
-      searchGoogle({
-        q,
-        cuisine,
-        key: googleKey,
-        cx: googleCx
-      })
-    ]);
-
-    console.log('Spoonacular count:', spoonResults.length);
-    console.log('Google count:', googleResults.length);
-
-    results.push(...spoonResults, ...googleResults);
-    results = dedupeResults(results);
-
-    res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate=3600');
+    res.setHeader('Cache-Control', 'no-store');
     return res.status(200).json({
-      results,
       debug: {
-        spoonacular: spoonResults.length,
         google: googleResults.length,
-        total: results.length
-      }
+        q,
+        cuisine,
+        hasGoogleKey: !!googleKey,
+        hasGoogleCx: !!googleCx
+      },
+      results: googleResults
     });
   } catch (e) {
     console.error('Handler error:', e);
