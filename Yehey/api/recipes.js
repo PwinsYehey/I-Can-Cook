@@ -25,6 +25,8 @@ function dedupeResults(items = []) {
 }
 
 async function searchSpoonacular({ q, cuisine, key }) {
+  if (!key) return [];
+
   const url = new URL('https://api.spoonacular.com/recipes/complexSearch');
   url.searchParams.set('apiKey', key);
   url.searchParams.set('number', '12');
@@ -90,7 +92,7 @@ async function searchSpoonacular({ q, cuisine, key }) {
   });
 }
 
-async function searchGoogleFallback({ q, cuisine, key, cx }) {
+async function searchGoogle({ q, cuisine, key, cx }) {
   if (!key || !cx || !q) return [];
 
   const searchQueryParts = [
@@ -111,7 +113,7 @@ async function searchGoogleFallback({ q, cuisine, key, cx }) {
   const r = await fetch(url.toString());
   if (!r.ok) {
     const text = await r.text().catch(() => '');
-    console.error('Google search fallback error:', r.status, text);
+    console.error('Google search error:', r.status, text);
     return [];
   }
 
@@ -131,7 +133,7 @@ async function searchGoogleFallback({ q, cuisine, key, cx }) {
       title: item.title || 'Recipe result',
       url: item.link || '',
       image: item.pagemap?.cse_image?.[0]?.src || '',
-      source: item.displayLink || 'Web',
+      source: item.displayLink || 'Google',
       sourceType: 'search',
       cuisine: cuisine || '',
       country: '',
@@ -157,32 +159,35 @@ export default async function handler(req, res) {
 
     let results = [];
 
-    if (spoonacularKey) {
-      const spoonResults = await searchSpoonacular({
+    const [spoonResults, googleResults] = await Promise.all([
+      searchSpoonacular({
         q,
         cuisine,
         key: spoonacularKey
-      });
-      results.push(...spoonResults);
-    }
-
-    const spoonCount = results.length;
-    const shouldUseFallback = spoonCount < 6;
-
-    if (shouldUseFallback && googleKey && googleCx) {
-      const fallbackResults = await searchGoogleFallback({
+      }),
+      searchGoogle({
         q,
         cuisine,
         key: googleKey,
         cx: googleCx
-      });
-      results.push(...fallbackResults);
-    }
+      })
+    ]);
 
+    console.log('Spoonacular count:', spoonResults.length);
+    console.log('Google count:', googleResults.length);
+
+    results.push(...spoonResults, ...googleResults);
     results = dedupeResults(results);
 
     res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate=3600');
-    return res.status(200).json({ results });
+    return res.status(200).json({
+      results,
+      debug: {
+        spoonacular: spoonResults.length,
+        google: googleResults.length,
+        total: results.length
+      }
+    });
   } catch (e) {
     console.error('Handler error:', e);
     return res.status(500).json({ error: 'Server error' });
