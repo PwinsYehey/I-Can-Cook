@@ -958,8 +958,8 @@ function renderRecipeResults(list){
     const missingStr = r.missingList?.slice(0,3).map(capitalize).join(', ') + (r.missingList && r.missingList.length > 3 ? '…' : '');
     const hasSteps = !!(r.instructions && r.instructions.trim().length);
     const sourceLabel =
-      r.sourceType === 'search' ? 'Web fallback' :
-      r.sourceType === 'api' ? 'Recipe API' :
+      r.sourceType === 'search' ? `Google Search • ${r.source || ''}` :
+      r.sourceType === 'api' ? `Spoonacular • ${r.source || ''}` :
       (r.source || '');
 
     return `
