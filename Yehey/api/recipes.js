@@ -1,107 +1,88 @@
 // /api/recipes.js
 
-function normalizeText(s = '') {
-  return s
-    .toLowerCase()
-    .replace(/\([^)]*\)/g, ' ')
-    .replace(/[^a-z0-9\s-]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-async function searchGoogle({ q, cuisine, key, cx }) {
-  if (!key || !cx || !q) {
-    return {
-      searchQuery: '',
-      requestUrl: '',
-      items: []
-    };
-  }
-
-  const queryCore = q
-    .split(',')
-    .map(s => normalizeText(s))
-    .filter(Boolean)
-    .join(' ');
-
-  const searchQuery = `${queryCore} ${cuisine ? cuisine + ' ' : ''}recipe`.trim();
-
-  const url = new URL('https://www.googleapis.com/customsearch/v1');
-  url.searchParams.set('key', key);
-  url.searchParams.set('cx', cx);
-  url.searchParams.set('q', searchQuery);
-  url.searchParams.set('num', '10');
-  url.searchParams.set('safe', 'active');
-
-  const requestUrl = url.toString();
-
-  const r = await fetch(requestUrl);
-
-  if (!r.ok) {
-    const text = await r.text().catch(() => '');
-    return {
-      searchQuery,
-      requestUrl,
-      error: {
-        status: r.status,
-        text
-      },
-      items: []
-    };
-  }
-
-  const j = await r.json();
-
-  return {
-    searchQuery,
-    requestUrl,
-    raw: j,
-    items: (j.items || []).map((item, idx) => ({
-      id: `google-${idx}-${Date.now()}`,
-      title: item.title || 'Recipe result',
-      url: item.link || '',
-      image: item.pagemap?.cse_image?.[0]?.src || '',
-      source: item.displayLink || 'Google',
-      sourceType: 'search',
-      cuisine: cuisine || '',
-      country: '',
-      ingredients: [],
-      instructions: ''
-    }))
-  };
-}
-
 export default async function handler(req, res) {
   try {
     const rawQ = (req.query.q || '').toString();
     const q = rawQ.slice(0, 300);
     const cuisine = (req.query.cuisine || '').toString().slice(0, 120);
+    const key = process.env.SPOONACULAR_KEY;
 
-    const googleKey = process.env.GOOGLE_SEARCH_KEY;
-    const googleCx = process.env.GOOGLE_SEARCH_CX;
+    if (!key) {
+      return res.status(500).json({ error: 'Missing SPOONACULAR_KEY env var' });
+    }
 
-    const google = await searchGoogle({
-      q,
-      cuisine,
-      key: googleKey,
-      cx: googleCx
+    if (!q && !cuisine) {
+      return res.status(400).json({ error: 'Missing q or cuisine parameter' });
+    }
+
+    const url = new URL('https://api.spoonacular.com/recipes/complexSearch');
+    url.searchParams.set('apiKey', key);
+    url.searchParams.set('number', '12');
+    url.searchParams.set('addRecipeInformation', 'true');
+    url.searchParams.set('fillIngredients', 'true');
+    url.searchParams.set('instructionsRequired', 'false');
+    url.searchParams.set('sort', 'relevance');
+
+    if (q) url.searchParams.set('query', q);
+    if (cuisine) url.searchParams.set('cuisine', cuisine);
+
+    const r = await fetch(url.toString());
+
+    if (!r.ok) {
+      const text = await r.text().catch(() => '');
+      console.error('Spoonacular error:', r.status, text);
+      return res.status(502).json({ error: 'Upstream API error' });
+    }
+
+    const j = await r.json();
+
+    const results = (j.results || []).map(item => {
+      const ingredients =
+        (item.extendedIngredients || []).map(i => (i.name || '').toLowerCase());
+
+      const primaryUrl =
+        item.spoonacularSourceUrl ||
+        item.sourceUrl ||
+        '';
+
+      let instructionsText = '';
+
+      if (
+        Array.isArray(item.analyzedInstructions) &&
+        item.analyzedInstructions.length > 0 &&
+        Array.isArray(item.analyzedInstructions[0].steps)
+      ) {
+        const steps = item.analyzedInstructions[0].steps;
+        if (steps.length) {
+          instructionsText = steps
+            .map(s => {
+              const num = s.number ? `${s.number}. ` : '';
+              return `${num}${s.step}`.trim();
+            })
+            .join('\n');
+        }
+      }
+
+      if (!instructionsText && item.instructions) {
+        instructionsText = item.instructions;
+      }
+
+      return {
+        id: `api-${item.id}`,
+        title: item.title,
+        url: primaryUrl,
+        image: item.image || '',
+        source: item.sourceName || 'Spoonacular',
+        sourceType: 'api',
+        cuisine: (item.cuisines && item.cuisines[0]) || '',
+        country: '',
+        ingredients,
+        instructions: instructionsText || ''
+      };
     });
 
-    return res.status(200).json({
-      debug: {
-        q,
-        cuisine,
-        hasGoogleKey: !!googleKey,
-        hasGoogleCx: !!googleCx,
-        cx: googleCx || null,
-        searchQuery: google.searchQuery || '',
-        requestUrl: google.requestUrl || '',
-        googleCount: google.items?.length || 0,
-        error: google.error || null
-      },
-      results: google.items || [],
-      raw: google.raw || null
-    });
+    res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate=3600');
+    return res.status(200).json({ results });
   } catch (e) {
     console.error('Handler error:', e);
     return res.status(500).json({ error: 'Server error' });
